@@ -1,4 +1,4 @@
-export type Visibility = "public" | "private" | "needs_review";
+export type Visibility = "public" | "private";
 
 export type ProjectStatus =
   | "verified"
@@ -16,6 +16,7 @@ export type Evidence = {
   type: string;
   url: string;
   assetUrl?: string;
+  pages?: number;
   visibility: Visibility;
   note: string;
 };
@@ -150,7 +151,7 @@ export const portfolioData = {
   statusLabels: {
     verified: {
       label: "자료 확인",
-      description: "Drive 또는 공개 자료에서 확인된 내용입니다."
+      description: "내부 공개 사본 또는 공개 자료에서 확인된 내용입니다."
     },
     strong_but_needs_confirmation: {
       label: "강한 근거, 확인 필요",
@@ -564,7 +565,7 @@ export const portfolioData = {
       customerContext: "관객, 연출, 동료 배우가 모두 이해관계자인 공연 환경에서 개인의 불안보다 장면의 완성도와 팀의 리듬을 우선해야 했습니다.",
       planningNarrative: "공연을 활동 이력으로만 두지 않고, 낯선 문제에 들어가 반복 훈련, 피드백 수용, 실전 발표로 공포를 낮춘 성장 프로세스로 정리했습니다.",
       salesNarrative: "고객 인터뷰, 발표, 세일즈 상황에서 필요한 태도인 낯선 사람 앞에서 말하기, 긴장 속에서 메시지 유지하기, 팀 결과물 책임지기를 보여주는 보조 사례입니다.",
-      role: "연극동아리 아름 공연 `해더웨이 가의 유령`에서 주연 브란트 역을 맡은 것으로 Drive 자료에서 확인됩니다.",
+      role: "연극동아리 아름 공연 `해더웨이 가의 유령`에서 주연 브란트 역을 맡은 것으로 공개 사본 자료에서 확인됩니다.",
       qualitativeHighlights: [
         "연기 경험이 없는 상태에서 주연 역할을 맡아 2개월간 반복 연습",
         "대학로/혜화 공연장에서 100여 명 관객 앞 토/일 2회 공연 완주",
@@ -574,7 +575,7 @@ export const portfolioData = {
         "대본 암기와 발성/표정/감정 연기 훈련",
         "연출, 배우들과 장면별 합과 감정선 조정",
         "실전 공연 2회 완주",
-        "Drive 원본 이미지 3장을 배포 자산으로 저장"
+        "원본 이미지 3장을 배포 자산으로 저장"
       ],
       technicalHighlights: [
         "Public Speaking",
@@ -689,7 +690,7 @@ export const portfolioData = {
     {
       id: "basic-info-md",
       title: "기본정보.md",
-      type: "Drive Markdown",
+      type: "Private Markdown",
       url: "",
       visibility: "private",
       note: "전화번호가 포함되어 있어 사이트에 직접 노출하지 않습니다."
@@ -697,112 +698,125 @@ export const portfolioData = {
     {
       id: "windmill-summary-pdf",
       title: "WindMill Project Summary PDF",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/1ncgSVxJxtpC9xYBjWvn5p0pKbsWpzTh3/view?usp=drivesdk",
+      type: "PDF",
+      url: "/evidence/windmill-project-summary.pdf",
       assetUrl: "/evidence/windmill-project-summary.pdf",
-      visibility: "needs_review",
-      note: "학술제 프로젝트 요약 PDF. 배포본에 포함되는 공개 사본."
+      pages: 3,
+      visibility: "public",
+      note: "학술제 프로젝트 요약 PDF. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "windmill-contribution-profile",
       title: "WindMill contribution-profile.md",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/148hyEmGzXFadY36TYxFuCE1ysxpE4MId/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/windmill-contribution-profile.md",
       assetUrl: "/evidence/windmill-contribution-profile.md",
-      visibility: "needs_review",
-      note: "PR/브랜치 기반 기여 후보 정리. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "PR/브랜치 기반 기여 후보 정리. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "windmill-readme",
       title: "WindMill Portfolio Source README",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1mCHTc5X0TsDCyRNCTZde9fUxpjZrdfoY/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/windmill-readme.md",
       assetUrl: "/evidence/windmill-readme.md",
-      visibility: "needs_review",
-      note: "verified, hypothesis, needs confirmation 규칙을 설명. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "verified, hypothesis, needs confirmation 규칙을 설명. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "gcs-daily-snippet-agent-md",
       title: "GCS Pulse Daily Snippet Agent Automation",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1juvxvlez0xyRo5G-i-IR9miEiIsKwh4a/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/gcs-daily-snippet-agent.md",
       assetUrl: "/evidence/gcs-daily-snippet-agent.md",
-      visibility: "needs_review",
-      note: "API, 웹, 자동화, feedback loop 설계 자료. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "API, 웹, 자동화, feedback loop 설계 자료. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "gcs-hutzpa-3-slides-pdf",
       title: "GCS8 팀후츠파 3차 발표 슬라이드",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/1yLhr725eVENS-1bptLrSzoEQ7H1KQXbs/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "PDF",
+      url: "/evidence/gcs-hutzpa-creator-popups-slides.pdf",
+      assetUrl: "/evidence/gcs-hutzpa-creator-popups-slides.pdf",
+      pages: 13,
+      visibility: "public",
       note: "1인 창작자 오프라인 접점 문제 정의와 검증 계획이 담긴 3차 발표 자료."
     },
     {
       id: "gcs-hutzpa-3-script-pdf",
       title: "GCS8 팀후츠파 3차 발표대본",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/1I_ui87ovbbuGsjkpc98AFFOCskekoVDw/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "PDF",
+      url: "/evidence/gcs-hutzpa-creator-popups-script.pdf",
+      assetUrl: "/evidence/gcs-hutzpa-creator-popups-script.pdf",
+      pages: 4,
+      visibility: "public",
       note: "송채우 발표자 맥락과 발표 흐름을 확인할 수 있는 3차 발표 대본."
     },
     {
       id: "gcs-hutzpa-2-slides-pdf",
       title: "GCS8 팀후츠파 2차 발표 슬라이드",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/14rZpe-I65cO479a9CKTAsA7m18kPwjol/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "PDF",
+      url: "/evidence/gcs-hutzpa-construction-billing-slides.pdf",
+      assetUrl: "/evidence/gcs-hutzpa-construction-billing-slides.pdf",
+      pages: 12,
+      visibility: "public",
       note: "공사 기성청구 문제 정의, 랜딩페이지 반응, 파일럿 전환 수치가 담긴 2차 발표 자료."
     },
     {
       id: "gcs-hutzpa-2-retro-md",
       title: "GCS8 팀후츠파 2차 발표 회고",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/14LOzhbPe8ehuGeOasb9TKbO8LQwMazWk/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "Markdown",
+      url: "/evidence/gcs-hutzpa-construction-billing-retro.md",
+      assetUrl: "/evidence/gcs-hutzpa-construction-billing-retro.md",
+      visibility: "public",
       note: "인터뷰, 피벗, 팀 의사결정 개선점을 정리한 2차 회고 자료."
     },
     {
       id: "gcs-pitumi-ai-native-pdf",
       title: "!GCS8기 1조피투미 AI Native PDF",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/1EQFDs8rmybQMk8hdynmPaB1fOUov_Y2I/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "PDF",
+      url: "/evidence/gcs-pitumi-ai-native.pdf",
+      assetUrl: "/evidence/gcs-pitumi-ai-native.pdf",
+      pages: 9,
+      visibility: "public",
       note: "제목 앞 ! 표시가 있어 필수 반영한 GCS 1차 AI Native 발표 자료."
     },
     {
       id: "gcs-pitumi-slides-pdf",
       title: "GCS8 1차 피투미 발표자료",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/1O6ZbwXwzF8m2Sj1tu6GMrugyd5QQwNts/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "PDF",
+      url: "/evidence/gcs-pitumi-slides.pdf",
+      assetUrl: "/evidence/gcs-pitumi-slides.pdf",
+      pages: 17,
+      visibility: "public",
       note: "1차 팀 발표 슬라이드 자료."
     },
     {
       id: "gcs-pitumi-retro-md",
       title: "GCS8 1차 피투미 발표 회고",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1p8ZpL6iSF_TGsf5oe3sMdvdnWYCPIsD_/view?usp=drivesdk",
-      visibility: "needs_review",
+      type: "Markdown",
+      url: "/evidence/gcs-pitumi-retro.md",
+      assetUrl: "/evidence/gcs-pitumi-retro.md",
+      visibility: "public",
       note: "선원/해운업 가설 검증 실패와 다음 스프린트 원칙을 정리한 1차 회고 자료."
     },
     {
       id: "gcs-llm-api-md",
       title: "LLM CLI / API Communication Summary",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/10cFFZt84l3f7qejaBRATWQLnbzYoaGVq/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/gcs-llm-api-automation.md",
       assetUrl: "/evidence/gcs-llm-api-automation.md",
-      visibility: "needs_review",
-      note: "Claude, EXA, Telegram, GCS/Calendar API 통합 경험 정리. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "Claude, EXA, Telegram, GCS/Calendar API 통합 경험 정리. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "oishifood-md",
       title: "Oishifood Landing Page Markdown",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1iTYbX3tgnxtpRzoPHn7kYmMdaynbshS7/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/oishifood-landing.md",
       assetUrl: "/evidence/oishifood-landing.md",
-      visibility: "needs_review",
-      note: "랜딩 페이지 구조, 기술 스택, 개발 과정 정리. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "랜딩 페이지 구조, 기술 스택, 개발 과정 정리. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "oishifood-repo",
@@ -823,37 +837,39 @@ export const portfolioData = {
     {
       id: "gcs-kanban-md",
       title: "Kanban Backend/CLI Markdown",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1XTJoWJWB6ibebQgaiPnM9dl20PRX9ZHq/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/gcs-kanban-backend-cli.md",
       assetUrl: "/evidence/gcs-kanban-backend-cli.md",
-      visibility: "needs_review",
-      note: "FastAPI backend와 Click CLI 구조 자료. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "FastAPI backend와 Click CLI 구조 자료. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "footstep-contribution-profile",
       title: "Footstep contribution-profile.md",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1QlTjx9jj2YGkrk_QpGg5Q2pjQyxgkLOv/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/footstep-contribution-profile.md",
       assetUrl: "/evidence/footstep-contribution-profile.md",
-      visibility: "needs_review",
-      note: "계정/역할 확인 전까지 hypothesis로 사용. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "계정/역할 확인 전까지 hypothesis로 사용. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "footstep-readme",
       title: "Footstep README",
-      type: "Drive Markdown",
-      url: "https://drive.google.com/file/d/1UPBuhT5BxFfl0YHs8spMs6tyOPhnNWQt/view?usp=drivesdk",
+      type: "Markdown",
+      url: "/evidence/footstep-readme.md",
       assetUrl: "/evidence/footstep-readme.md",
-      visibility: "needs_review",
-      note: "팀 프로젝트 source 설명. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "팀 프로젝트 source 설명. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "areum-activity-pdf",
       title: "연극동아리 아름 활동 PDF",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/19ZpHfAMMvdp6AjU2yzMwLsd2YL9hCEOM/view?usp=drivesdk",
-      visibility: "needs_review",
-      note: "무대 공포 극복, 주연 역할, 공연 경험을 정리한 Drive 자료."
+      type: "PDF",
+      url: "/evidence/areum-activity.pdf",
+      assetUrl: "/evidence/areum-activity.pdf",
+      pages: 2,
+      visibility: "public",
+      note: "무대 공포 극복, 주연 역할, 공연 경험을 정리한 내부 공개 사본."
     },
     {
       id: "areum-image-1",
@@ -862,7 +878,7 @@ export const portfolioData = {
       url: "/assets/projects/areum/areum-1.jpg",
       assetUrl: "/assets/projects/areum/areum-1.jpg",
       visibility: "public",
-      note: "Drive에서 내려받아 배포 자산으로 저장한 공연 후 전체 단체 사진."
+      note: "배포 자산으로 저장한 공연 후 전체 단체 사진."
     },
     {
       id: "areum-image-2",
@@ -871,7 +887,7 @@ export const portfolioData = {
       url: "/assets/projects/areum/areum-2.jpg",
       assetUrl: "/assets/projects/areum/areum-2.jpg",
       visibility: "public",
-      note: "Drive에서 내려받아 배포 자산으로 저장한 배우와 스태프 단체 사진."
+      note: "배포 자산으로 저장한 배우와 스태프 단체 사진."
     },
     {
       id: "areum-image-3",
@@ -880,34 +896,35 @@ export const portfolioData = {
       url: "/assets/projects/areum/areum-3.jpg",
       assetUrl: "/assets/projects/areum/areum-3.jpg",
       visibility: "public",
-      note: "Drive에서 내려받아 배포 자산으로 저장한 무대 장면 기록."
+      note: "배포 자산으로 저장한 무대 장면 기록."
     },
     {
       id: "cert-history-pdf",
       title: "한국사능력검정 1급 증빙",
-      type: "Drive PDF",
-      url: "https://drive.google.com/file/d/1bl5iVRabVU3i2qNll9Xy5qAeI2gl5_eA/view?usp=drivesdk",
+      type: "PDF",
+      url: "/evidence/cert-history.pdf",
       assetUrl: "/evidence/cert-history.pdf",
-      visibility: "needs_review",
-      note: "자격증 증빙. 배포본에 포함되는 공개 사본."
+      pages: 1,
+      visibility: "public",
+      note: "자격증 증빙. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "cert-linuxmaster-png",
       title: "리눅스마스터 2급 증빙",
-      type: "Drive Image",
-      url: "https://drive.google.com/file/d/1zfJdhf0QRGbtx_n7rS1UFOavzI1a4RMD/view?usp=drivesdk",
+      type: "Image",
+      url: "/evidence/cert-linuxmaster.png",
       assetUrl: "/evidence/cert-linuxmaster.png",
-      visibility: "needs_review",
-      note: "자격증 증빙. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "자격증 증빙. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "cert-info-processing-jpg",
       title: "정보처리기능사 증빙",
-      type: "Drive Image",
-      url: "https://drive.google.com/file/d/1PczfUnx_Uo3KvczqHTnjbyKiJhWjCyUA/view?usp=drivesdk",
+      type: "Image",
+      url: "/evidence/cert-info-processing.jpg",
       assetUrl: "/evidence/cert-info-processing.jpg",
-      visibility: "needs_review",
-      note: "자격증 증빙. 배포본에 포함되는 공개 사본."
+      visibility: "public",
+      note: "자격증 증빙. 배포본에 포함되는 내부 공개 사본."
     }
   ]
 } satisfies PortfolioData;
