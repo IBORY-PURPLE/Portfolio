@@ -351,6 +351,12 @@ function PdfPreview({ item }: { item: Evidence }) {
   const [page, setPage] = useState(1);
   const [loaded, setLoaded] = useState(false);
   const pageCount = item.pages || 1;
+  const safePage = Math.min(page, pageCount);
+
+  useEffect(() => {
+    setPage(1);
+    setLoaded(false);
+  }, [href]);
 
   function movePage(nextPage: number) {
     const safePage = Math.min(Math.max(nextPage, 1), pageCount);
@@ -364,14 +370,14 @@ function PdfPreview({ item }: { item: Evidence }) {
         <div>
           <span className="evidence-type">PDF</span>
           <strong>
-            {page} / {pageCount}
+            {safePage} / {pageCount}
           </strong>
         </div>
         <div className="pdf-actions">
-          <button disabled={page <= 1} onClick={() => movePage(page - 1)} type="button">
+          <button disabled={safePage <= 1} onClick={() => movePage(safePage - 1)} type="button">
             이전
           </button>
-          <button disabled={page >= pageCount} onClick={() => movePage(page + 1)} type="button">
+          <button disabled={safePage >= pageCount} onClick={() => movePage(safePage + 1)} type="button">
             다음
           </button>
           <a href={href} rel="noreferrer" target="_blank">
@@ -382,9 +388,9 @@ function PdfPreview({ item }: { item: Evidence }) {
       <div className="pdf-frame-wrap">
         {!loaded && <div className="pdf-loader">PDF 미리보기를 준비하는 중입니다.</div>}
         <iframe
-          key={`${href}-${page}`}
+          key={`${href}-${safePage}`}
           className="pdf-frame"
-          src={normalizePdfSrc(href, page)}
+          src={normalizePdfSrc(href, safePage)}
           title={`${item.title} PDF preview`}
           onLoad={() => setLoaded(true)}
         />
@@ -436,6 +442,65 @@ function EvidenceDisclosure({ item }: { item: Evidence }) {
   );
 }
 
+function EvidenceBrowser({ items }: { items: Evidence[] }) {
+  const [selectedId, setSelectedId] = useState(items[0]?.id || "");
+  const selectedItem = items.find((item) => item.id === selectedId) || items[0];
+
+  useEffect(() => {
+    if (!items.some((item) => item.id === selectedId)) {
+      setSelectedId(items[0]?.id || "");
+    }
+  }, [items, selectedId]);
+
+  if (!selectedItem) {
+    return <p className="muted">등록된 증빙이 없습니다.</p>;
+  }
+
+  return (
+    <div className="evidence-browser">
+      <div className="evidence-browser-head">
+        <div>
+          <p className="eyebrow">Evidence Files</p>
+          <h3>PDF와 Markdown 근거를 사이트 안에서 바로 확인합니다</h3>
+        </div>
+        <span className="evidence-count">{items.length}개 공개 사본</span>
+      </div>
+      <div className="evidence-picker" role="tablist" aria-label="근거 자료 선택">
+        {items.map((item) => {
+          const selected = item.id === selectedItem.id;
+          return (
+            <button
+              className={`evidence-tab${selected ? " selected" : ""}`}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              key={item.id}
+              onClick={() => setSelectedId(item.id)}
+            >
+              <span className="evidence-type">{item.type}</span>
+              <strong>{item.title}</strong>
+              <small>{evidenceAccessLabel(item)}</small>
+            </button>
+          );
+        })}
+      </div>
+      <article className="evidence-preview-panel">
+        <div className="evidence-preview-heading">
+          <div>
+            <span className="evidence-type">{selectedItem.type}</span>
+            <h3>{selectedItem.title}</h3>
+            <p>{selectedItem.note}</p>
+          </div>
+          <a href={evidenceHref(selectedItem)} rel="noreferrer" target="_blank">
+            원본 파일 열기
+          </a>
+        </div>
+        <EvidencePreview item={selectedItem} key={selectedItem.id} />
+      </article>
+    </div>
+  );
+}
+
 function EvidenceList({ ids, compact = false }: { ids: string[]; compact?: boolean }) {
   const items = ids.map(getEvidence).filter((item): item is Evidence => Boolean(item));
 
@@ -443,8 +508,12 @@ function EvidenceList({ ids, compact = false }: { ids: string[]; compact?: boole
     return <p className="muted">등록된 증빙이 없습니다.</p>;
   }
 
+  if (!compact) {
+    return <EvidenceBrowser items={items} />;
+  }
+
   return (
-    <div className={`evidence-list${compact ? " evidence-list-compact" : ""}`}>
+    <div className="evidence-list evidence-list-compact">
       {items.map((item) => {
         return (
           <article className="evidence-item" key={item.id}>

@@ -745,6 +745,122 @@ a:focus-visible {
   gap: 10px;
 }
 
+.evidence-browser {
+  display: grid;
+  gap: 14px;
+}
+
+.evidence-browser-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.evidence-browser-head h3 {
+  margin: 0;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  line-height: 1.15;
+}
+
+.evidence-count {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  font-weight: 900;
+}
+
+.evidence-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+}
+
+.evidence-tab {
+  display: grid;
+  gap: 8px;
+  min-height: 118px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.evidence-tab:hover,
+.evidence-tab.selected {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(18, 19, 20, 0.1);
+}
+
+.evidence-tab.selected {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f8ef 100%);
+}
+
+.evidence-tab strong {
+  line-height: 1.2;
+}
+
+.evidence-tab small {
+  color: var(--ink-soft);
+  font-weight: 850;
+}
+
+.evidence-preview-panel {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper-strong);
+}
+
+.evidence-preview-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.evidence-preview-heading h3 {
+  margin: 8px 0 6px;
+  font-size: clamp(1.25rem, 2vw, 1.8rem);
+  line-height: 1.15;
+}
+
+.evidence-preview-heading p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.evidence-preview-heading a {
+  flex: 0 0 auto;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.evidence-preview-heading a:hover {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
 .evidence-item {
   display: grid;
   gap: 14px;
@@ -1301,9 +1417,49 @@ a:focus-visible {
   }
 
   .evidence-summary,
+  .evidence-browser-head,
+  .evidence-preview-heading,
   .pdf-toolbar {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .evidence-preview-heading a {
+    width: 100%;
+    text-align: center;
+  }
+
+  .evidence-picker {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .evidence-tab {
+    flex: 0 0 min(76vw, 250px);
+    min-height: 0;
+    padding: 12px;
+    scroll-snap-align: start;
+  }
+
+  .evidence-browser {
+    gap: 12px;
+  }
+
+  .evidence-preview-panel {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .evidence-browser-head h3,
+  .evidence-preview-heading h3 {
+    font-size: 1.22rem;
+  }
+
+  .evidence-preview-heading p {
+    margin: 0;
   }
 
   .pdf-toolbar > div,
@@ -1318,12 +1474,12 @@ a:focus-visible {
   }
 
   .pdf-frame-wrap {
-    min-height: 470px;
+    min-height: 390px;
   }
 
   .markdown-body {
-    max-height: 520px;
-    padding: 18px;
+    max-height: 460px;
+    padding: 16px;
   }
 
   .page-intro {
@@ -1395,6 +1551,7 @@ a:focus-visible {
 :root[data-theme="dark"] .button-secondary,
 :root[data-theme="dark"] .filter-button,
 :root[data-theme="dark"] .tag,
+:root[data-theme="dark"] .evidence-tab,
 :root[data-theme="dark"] .markdown-toggle,
 :root[data-theme="dark"] .theme-toggle {
   background: #171a1f;
@@ -1414,8 +1571,13 @@ a:focus-visible {
 :root[data-theme="dark"] .accent-coral,
 :root[data-theme="dark"] .accent-cobalt,
 :root[data-theme="dark"] .accent-mint,
+:root[data-theme="dark"] .evidence-preview-panel,
 :root[data-theme="dark"] .markdown-body {
   background: #171a1f;
+}
+
+:root[data-theme="dark"] .evidence-tab.selected {
+  background: linear-gradient(180deg, #1c2026 0%, #171d14 100%);
 }
 
 :root[data-theme="dark"] .filter-bar {
