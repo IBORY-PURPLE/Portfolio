@@ -55,4 +55,6 @@ Vercel은 `vercel.json`의 설정에 따라 `dist` 폴더를 배포합니다.
 - 발견: QA 점검에서 `public/evidence` 폴더에 안내 파일만 있고 실제 PDF/MD 자산이 없어, 데이터의 `assetUrl`이 배포에서 깨질 수 있음을 확인했습니다.
 - 대응: Drive에서 공개 가능한 증빙을 내려받아 `public/evidence`에 배치하고, 데이터의 근거 URL을 내부 정적 경로로 교체했습니다.
 - 추가 보정: Markdown 기여 문서에 노출된 개인 이메일 문자열을 제거하고, 예시 토큰은 `{TOKEN}` 형태의 플레이스홀더만 남겼습니다.
-- 검증: `npm run check`, `npm run build`, 주요 화면 데스크톱/모바일 확인을 완료 기준으로 둡니다.
+- 발견: QA 에이전트가 여러 PDF를 오가면 이전 문서의 페이지 번호가 다음 문서에 남을 수 있는 리스크를 잡았습니다.
+- 대응: PDF 파일이 바뀌면 미리보기를 1페이지로 리셋하고, Evidence 선택 패널을 PDF/Markdown 탭 구조로 정리했으며, 확대/축소와 다운로드 fallback을 추가했습니다.
+- 검증: `npm run check`, `npm run build`, Evidence 자산 검증, 주요 화면 데스크톱/모바일 확인을 완료 기준으로 둡니다.

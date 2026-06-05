@@ -34,6 +34,21 @@ export type ProjectMedia = {
   caption: string;
 };
 
+export type ProjectMetric = {
+  label: string;
+  value: string;
+  description: string;
+  kind: "input" | "output" | "impact";
+};
+
+export type ProjectContribution = {
+  level: string;
+  percentage?: number;
+  percentageBasis?: string;
+  ownership: string;
+  scope: string[];
+};
+
 export type Project = {
   slug: string;
   title: string;
@@ -48,6 +63,8 @@ export type Project = {
   planningNarrative: string;
   salesNarrative: string;
   role: string;
+  roiMetrics: ProjectMetric[];
+  contribution: ProjectContribution;
   qualitativeHighlights: string[];
   executionScope: string[];
   technicalHighlights: string[];
@@ -177,6 +194,35 @@ export const portfolioData = {
       planningNarrative: "기술 스택보다 먼저 사용자가 '무엇을 보고 어떤 판단을 해야 하는가'를 잡고, 주식 상세, 거래 로그, AI 예측, 추천 화면을 단계적으로 연결했습니다.",
       salesNarrative: "투자 판단을 대신하는 서비스가 아니라, 사용자의 정보 탐색 비용을 낮추고 비교 가능한 근거를 한 화면 안에 모으는 도구로 설명할 수 있습니다.",
       role: "공개 GitHub 기록 기준으로 `채우` author와 `chaewoo` 브랜치 PR이 다수 확인됩니다. 최종 확인 전까지는 주요 프론트엔드 기여 후보로 표현합니다.",
+      roiMetrics: [
+        {
+          label: "Input · 구현 범위",
+          value: "5개 UI 흐름",
+          description: "주식 상세부터 관심/보유, 거래 로그, 예측, 추천까지 연결",
+          kind: "input"
+        },
+        {
+          label: "Output · 제품 구조",
+          value: "1개 판단 여정",
+          description: "흩어진 투자 정보를 탐색·비교·판단 흐름으로 통합",
+          kind: "output"
+        },
+        {
+          label: "Impact · 검증 가능성",
+          value: "3개 공개 근거",
+          description: "요약 PDF, 기여 후보 기록, README로 역할을 교차 확인",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "주요 Frontend 기여 후보",
+        ownership: "기여 범위 최종 확인 전",
+        scope: [
+          "사용자 판단 여정 중심의 화면 구조",
+          "React/Vite 주요 화면과 API 연동 후보",
+          "TanStack Query와 배포 프록시 문서화 후보"
+        ]
+      },
       qualitativeHighlights: [
         "고객 가치: 종목 탐색, 보유/관심 관리, 예측 확인, 추천 흐름을 한 제품 시나리오로 구성",
         "기획 포인트: 주식 상세와 포트폴리오 추천을 별개 기능이 아닌 판단 여정으로 연결",
@@ -225,6 +271,36 @@ export const portfolioData = {
       planningNarrative: "핵심은 'AI가 글을 대신 쓰는 것'이 아니라, 근거 자료를 보존하고 서버의 평가 기준을 통과할 때까지 자동 개선하는 품질 관리 루프입니다.",
       salesNarrative: "개인의 회고 습관을 API, 웹 UI, 자동화, 피드백 분석이 연결된 작은 제품으로 바꾼 사례입니다.",
       role: "개인 프로젝트 owner로서 API 명세 분석, Daily/Weekly Snippet API와 웹 기능 구현, 에이전트 자동 업로드 워크플로 설계를 담당한 것으로 자료에 정리되어 있습니다.",
+      roiMetrics: [
+        {
+          label: "Input · 연결 범위",
+          value: "4개 실행 계층",
+          description: "Obsidian, API, 웹 화면, 에이전트 자동화를 하나의 루프로 설계",
+          kind: "input"
+        },
+        {
+          label: "Output · 품질 기준",
+          value: "90점 이상",
+          description: "서버 피드백 기준을 통과할 때까지 자동 개선",
+          kind: "output"
+        },
+        {
+          label: "Impact · 운영 안정성",
+          value: "Retry + Rollback",
+          description: "실패 시 재시도하고 최대 시도 초과 시 임시 업로드를 복구",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "개인 프로젝트 Owner",
+        percentage: 100,
+        ownership: "기획·설계·구현 전 과정",
+        scope: [
+          "API 명세 분석과 Daily/Weekly 기능 구현",
+          "웹 작성 화면과 점수 시각화",
+          "에이전트 자동 업로드 및 실패 복구 정책"
+        ]
+      },
       qualitativeHighlights: [
         "원문을 그대로 노출하지 않는 privacy-aware diary transformation",
         "90점 이상 feedback gate와 retry/rollback 정책",
@@ -276,6 +352,35 @@ export const portfolioData = {
       planningNarrative: "온라인 홍보 한계, 페어 비용, 공간 맥락을 분리해 '기존 방문객이 있는 오프라인 공간에서 소량으로 발견되는 구조'라는 가설로 좁혔습니다.",
       salesNarrative: "작가 10명에게 유료 테스트를 제안하고, 사진관/꽃집/네일샵/카페 등 공간 20곳을 접촉해 공간 1곳에 3~5명분 굿즈를 소량 배치하는 프리토타이핑 흐름으로 설명했습니다.",
       role: "발표대본에서 팀 후츠파 발표자로 확인됩니다. 팀 발표 자료 기준으로 문제 정의, 현장 검증, 다음 검증 계획을 함께 정리한 프로젝트입니다.",
+      roiMetrics: [
+        {
+          label: "Input · 고객 접촉",
+          value: "DM 100명",
+          description: "서울일러스트페어 참여 1인 창작자에게 문제 가설을 검증",
+          kind: "input"
+        },
+        {
+          label: "Output · 초기 반응",
+          value: "응답 28명",
+          description: "오프라인 신규 고객 접점에 대한 구체적 반응 확보",
+          kind: "output"
+        },
+        {
+          label: "Impact · 응답률",
+          value: "28%",
+          description: "다음 유료 테스트와 공간 섭외 실험으로 이어질 수요 신호",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "팀 공동 기여 · 발표자",
+        ownership: "발표 대본에서 역할 확인",
+        scope: [
+          "1인 창작자 문제 가설 정리",
+          "현장 검증 결과와 공간 조건 구조화",
+          "유료 테스트·Fake Door 다음 실험 제안"
+        ]
+      },
       qualitativeHighlights: [
         "서울일러스트페어 참여 1인 창작자 대상 DM 100명, 응답 28명으로 초기 수요 신호 확인",
         "군자역 플리마켓과 독립서점 방문을 통해 자리 대여비, 운영 부담, 공간 맥락을 구체화",
@@ -313,25 +418,62 @@ export const portfolioData = {
     {
       slug: "gcs-hutzpa-construction-billing",
       title: "GCS8 2차 팀 후츠파: 공사 기성청구 검증",
-      subtitle: "덤프트럭 가설에서 원청 공무 담당자의 월말 기성청구 문제로 피벗한 팀 발표",
+      subtitle: "9시간 현장 인터뷰로 데스크 리서치의 빈틈을 깨고 진짜 기성청구 문제를 찾다",
       period: "2026.05",
       priority: 4,
       status: "verified",
       tags: ["Planning", "Research", "Customer", "Sales", "Presentation", "Collaboration"],
-      summary: "초기 덤프트럭 기사 가설을 인터뷰로 점검한 뒤, 원청 공무 담당자의 월말 기성청구 취합/검증 문제로 방향을 바꾸고 랜딩페이지 반응까지 확인한 2차 팀 발표 프로젝트입니다.",
-      problem: "공무 담당자는 사진, 도면, 수량 산출서가 내역서 항목과 연결되지 않아 월말 기성청구 마감 때 자료를 수작업으로 취합하고 검증해야 합니다.",
-      customerContext: "덤프트럭 운전자 인터뷰 3건에서 급여 정산 시점 문제를 확인했지만, 더 큰 업무 병목은 원청 공무 담당자의 증빙 자료 정리와 내역서 연결 과정에서 드러났습니다.",
-      planningNarrative: "처음 잡은 사용자가 틀릴 수 있음을 인정하고, 인터뷰에서 나온 더 구체적인 고통을 따라 문제 정의를 공사 관리자 업무 흐름으로 전환했습니다.",
-      salesNarrative: "카페 글 조회수 57명, 신청자 24명, 파일럿 사용 확정자 8명으로 신청 전환율 42%, 파일럿 확정 전환율 33%의 초기 수요 신호를 정리했습니다.",
-      role: "팀 후츠파 발표/회고 참여자로 확인됩니다. 팀 자료 기준으로 고객 인터뷰, 문제 전환, 랜딩페이지 검증 결과를 함께 정리했습니다.",
+      summary: "오전 10시부터 오후 7시까지 위례 건설 현장을 직접 돌며 인터뷰 거절을 감수했습니다. 덤프트럭 기사에서 DL건설 현장 관리자까지 이해관계자를 넓혀, 월말 기성청구 자료가 서로 연결되지 않는 진짜 Pain Point를 발견하고 사업 발표의 문제 정의로 전환했습니다.",
+      problem: "데스크 리서치만으로는 '누가 기성청구 과정에서 가장 큰 비용을 치르는가'가 보이지 않았습니다. 초기 덤프트럭 기사 가설을 고집하면 현장의 더 큰 병목을 놓칠 수 있는 상황이었습니다.",
+      customerContext: "오전 10시부터 오후 7시까지 위례 건설 현장에 직접 찾아가 거절을 무릅쓰고 대화를 요청했습니다. 덤프트럭 기사에게서 출발해 DL건설 현장 관리자까지 인터뷰 범위를 넓히며, 사진·수량·도면을 월말마다 다시 맞춰야 하는 실무자의 목소리를 확보했습니다.",
+      planningNarrative: "초기 가설이 틀릴 수 있음을 빠르게 인정하고, 현장에서 반복해서 나온 증언을 따라 타깃을 원청 공무 담당자로 피벗했습니다. 흩어진 공사 데이터가 '발주처가 검증 가능한 형태'로 연결되지 않는 구조를 핵심 문제로 정의했습니다.",
+      salesNarrative: "현장 목소리로 문제 정의를 날카롭게 만든 뒤 2차 후츠파 사업 발표를 완수했습니다. 이후 랜딩페이지에서도 조회 57명 중 신청 24명, 파일럿 확정 8명이라는 초기 수요 신호를 확보했습니다.",
+      role: "현장 인터뷰와 문제 정의 전환에 직접 참여하고, 팀 발표·회고에서 검증 결과를 사업 맥락으로 구조화했습니다. 팀 전체 기여율은 공개 자료만으로 정확히 나누지 않습니다.",
+      roiMetrics: [
+        {
+          label: "현장 밀착 검증",
+          value: "9시간",
+          description: "오전 10시부터 오후 7시까지 위례 건설 현장을 직접 탐색",
+          kind: "input"
+        },
+        {
+          label: "인터뷰 확장",
+          value: "기사 → 관리자",
+          description: "거절을 감수하며 덤프트럭 기사부터 DL건설 현장 관리자까지 접근",
+          kind: "input"
+        },
+        {
+          label: "진짜 Pain Point",
+          value: "가설 검증 완료",
+          description: "데스크 리서치로 보이지 않던 기성청구 자료 연결 병목을 발견",
+          kind: "output"
+        },
+        {
+          label: "후속 수요 신호",
+          value: "24명 → 8명",
+          description: "신청 전환율 42%, 신청자 중 파일럿 확정 전환율 33%",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "현장 인터뷰·문제 정의 기여",
+        percentageBasis: "팀 내 전체 기여율은 공개 자료상 미확인",
+        ownership: "고객 접촉부터 피벗 논리와 발표 맥락 구조화까지 참여",
+        scope: [
+          "위례 건설 현장 방문과 인터뷰 요청",
+          "덤프트럭 기사·현장 관리자 목소리 수집",
+          "원청 공무 담당자 문제로의 피벗 구조화",
+          "2차 후츠파 사업 발표와 회고 정리"
+        ]
+      },
       qualitativeHighlights: [
-        "초기 덤프트럭 기사 가설에서 공무 담당자 기성청구 문제로 피벗",
-        "랜딩페이지 반응으로 신청자 24명, 파일럿 확정자 8명의 수요 신호 확인",
-        "의사결정 지연과 검증 부족을 회고하고 다음 스프린트 운영 원칙으로 전환"
+        "설득력: 약속 없는 현장을 직접 찾아가 인터뷰 거절을 감수하고 실무자의 대화를 끌어냈습니다.",
+        "현장 집요함: 9시간 동안 고객 범위를 넓히며 데스크 리서치가 놓친 업무 병목을 끝까지 추적했습니다.",
+        "문제 전환: 처음 세운 덤프트럭 기사 가설을 방어하지 않고, 더 강한 현장 증거를 따라 원청 공무 담당자 문제로 피벗했습니다."
       ],
       executionScope: [
-        "덤프트럭 운전자 인터뷰와 가설 점검",
-        "공사 관리자 인터뷰 기반 문제 재정의",
+        "위례 건설 현장 방문과 덤프트럭 운전자 인터뷰",
+        "DL건설 현장 관리자 인터뷰 기반 문제 재정의",
         "랜딩페이지/커뮤니티 반응 기반 전환 확인",
         "팀 의사결정 기준, 시간 제한, 검증 행동 규칙 정리"
       ],
@@ -350,12 +492,12 @@ export const portfolioData = {
       ],
       evidenceIds: ["gcs-hutzpa-2-slides-pdf", "gcs-hutzpa-2-retro-md"],
       lessons: [
-        "타깃을 바꾸는 판단은 실패가 아니라 더 정확한 문제로 이동하는 과정입니다.",
-        "전환율은 제품을 멋지게 보이게 하는 숫자가 아니라 다음 실험의 우선순위를 정하는 기준입니다."
+        "거절을 피하는 것보다 현장에 들어가는 것이 문제 발견 속도를 훨씬 빠르게 만듭니다.",
+        "타깃을 바꾸는 판단은 실패가 아니라 더 강한 고객 증거를 따라가는 과정입니다."
       ],
       improvements: [
         "파일럿 확정 이후 실제 사용 지속률과 반복 사용 사유를 추가",
-        "현장 업무 자료 샘플을 개인정보 없이 재구성해 이해 속도를 높이기"
+        "인터뷰 전 성공 기준과 질문 우선순위를 정해 9시간의 현장 탐색 밀도를 더 높이기"
       ]
     },
     {
@@ -372,6 +514,35 @@ export const portfolioData = {
       planningNarrative: "발표 실패를 숨기지 않고 데스크 리서치 게이트, 팀 재구성, Kill Rule, 시간보다 밀도 기준이라는 다음 스프린트 원칙으로 바꿨습니다.",
       salesNarrative: "완성된 성과보다도 '얕은 가설을 어떻게 버리고 더 강한 검증 방식으로 바꾸는가'를 보여주는 제품 사고 사례로 설명할 수 있습니다.",
       role: "1차 피투미 발표/회고 자료에 참여자로 확인됩니다. 고객 인터뷰, 실패 원인 정리, 다음 스프린트 원칙 도출 경험이 자료에 남아 있습니다.",
+      roiMetrics: [
+        {
+          label: "Input · 검증 시도",
+          value: "인터뷰 8건",
+          description: "선원·해운업 및 유사 타깃을 만나 초기 가설의 빈틈 확인",
+          kind: "input"
+        },
+        {
+          label: "Output · 실패 원인",
+          value: "3개 원인 분리",
+          description: "리서치, 타깃, 질문 설계의 부족을 숨기지 않고 구체화",
+          kind: "output"
+        },
+        {
+          label: "Impact · 실행 기준",
+          value: "Gate + Kill Rule",
+          description: "다음 스프린트에서 약한 가설을 빠르게 거르는 규칙으로 전환",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "팀 공동 기여",
+        ownership: "발표·회고 자료에서 참여 확인",
+        scope: [
+          "고객 인터뷰와 초기 가설 검증",
+          "실패 원인의 구조화",
+          "리서치 게이트와 Kill Rule 도출"
+        ]
+      },
       qualitativeHighlights: [
         "선원/해운업 관련 인터뷰 8건을 통해 초기 가설의 빈틈을 확인",
         "데스크 리서치, 법/정책, 경쟁사 분석 부족을 실패 요인으로 명시",
@@ -420,6 +591,35 @@ export const portfolioData = {
       planningNarrative: "각 API를 기능 단위로만 호출하지 않고, 사용자가 끝까지 완료해야 하는 업무 흐름으로 묶었습니다.",
       salesNarrative: "AI를 멋진 답변 생성기가 아니라, 반복 업무를 줄이고 실패 복구까지 돕는 운영 파트너로 포지셔닝한 사례입니다.",
       role: "자료 기준으로 LLM/API 통신 패턴을 정리하고, CLI와 자동화 스크립트가 호출할 수 있는 구조를 설계한 경험이 확인됩니다.",
+      roiMetrics: [
+        {
+          label: "Input · 외부 연동",
+          value: "4개 연동군",
+          description: "Claude, EXA, Telegram, GCS/Calendar를 업무 흐름에 연결",
+          kind: "input"
+        },
+        {
+          label: "Output · 자동화 흐름",
+          value: "3개 운영 시나리오",
+          description: "검색·요약, 회고 업로드, 회의실 예약·초대 흐름 구현",
+          kind: "output"
+        },
+        {
+          label: "Impact · 실패 복구",
+          value: "Rollback 적용",
+          description: "Calendar 생성 실패 시 앞선 회의실 예약까지 복구",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "핵심 설계·구현",
+        ownership: "공개 정리 자료에서 확인",
+        scope: [
+          "LLM/API 통신 패턴과 인증 방식 정리",
+          "CLI·자동화 스크립트 호출 구조",
+          "오류 기록, fallback, rollback 정책"
+        ]
+      },
       qualitativeHighlights: [
         "외부 SDK에 의존하지 않고 native fetch와 PowerShell wrapper 중심으로 API 호출 표준화",
         "Claude 응답 실패 시 body snippet과 request id를 남기는 디버깅 경험",
@@ -469,6 +669,35 @@ export const portfolioData = {
       planningNarrative: "스크롤 진행도와 카드 전환으로 팀의 미식 여정을 이야기처럼 읽게 만들었습니다.",
       salesNarrative: "랜딩 페이지를 단순 소개가 아니라 팀의 인상과 참여 행동을 만드는 세일즈 표면으로 설계했습니다.",
       role: "문서 기준으로 4일 동안 React/Vite/Tailwind 기반 랜딩 페이지와 Supabase 뉴스레터 연동 구조를 정리했습니다.",
+      roiMetrics: [
+        {
+          label: "Input · 제작 기간",
+          value: "4일",
+          description: "콘셉트 정리부터 인터랙션과 뉴스레터 연동까지 집중 구현",
+          kind: "input"
+        },
+        {
+          label: "Output · 핵심 화면",
+          value: "4개 섹션",
+          description: "Hero, Scroll Journey, Members, Footer/Newsletter 구성",
+          kind: "output"
+        },
+        {
+          label: "Impact · 행동 연결",
+          value: "구독 → 발송",
+          description: "팀 소개에서 끝나지 않고 Supabase·Resend 참여 흐름으로 연결",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "Frontend 구현·연동",
+        ownership: "프로젝트 문서에서 범위 확인",
+        scope: [
+          "React/Vite/Tailwind 화면 구조",
+          "스크롤 기반 인터랙션",
+          "Supabase 뉴스레터 구독·발송 연동"
+        ]
+      },
       qualitativeHighlights: [
         "팀 콘셉트와 멤버별 음식 스토리를 하나의 스크롤 흐름으로 정리",
         "멤버 카드에서 상세 모달로 이어지는 인터랙션",
@@ -517,6 +746,35 @@ export const portfolioData = {
       planningNarrative: "API와 CLI가 같은 도메인 모델을 공유하도록, 인증과 리소스 조작을 명령어 흐름으로 정리했습니다.",
       salesNarrative: "팀의 작업 상태를 CLI에서도 빠르게 조작할 수 있는 운영 도구로 설명할 수 있습니다.",
       role: "자료 기준으로 FastAPI 백엔드와 CLI 구조, OAuth, 테스트/린트 운영 문서를 정리한 프로젝트입니다.",
+      roiMetrics: [
+        {
+          label: "Input · 도메인 모델",
+          value: "4개 리소스",
+          description: "Workspace, Board, Column, Card를 일관된 구조로 모델링",
+          kind: "input"
+        },
+        {
+          label: "Output · 사용 표면",
+          value: "API + CLI",
+          description: "같은 도메인 작업을 서버와 로컬 명령에서 모두 수행",
+          kind: "output"
+        },
+        {
+          label: "Impact · 재현성",
+          value: "Test + Lint",
+          description: "pytest와 ruff, 운영 문서로 로컬 실행과 검증 흐름 정리",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "Backend·CLI 구조화",
+        ownership: "공개 정리 자료에서 확인",
+        scope: [
+          "FastAPI 도메인 API와 서비스 계층",
+          "Click CLI와 OpenAPI mapping",
+          "OAuth, 테스트, 린트 운영 문서"
+        ]
+      },
       qualitativeHighlights: [
         "Google OAuth와 JWT 세션 교환 흐름",
         "workspace, board, column, card API 모델링",
@@ -555,26 +813,65 @@ export const portfolioData = {
     {
       slug: "areum-stage-project",
       title: "연극동아리 아름",
-      subtitle: "발표 공포를 주연 무대 경험으로 전환한 협업/성장 프로젝트",
+      subtitle: "3개월의 집요한 몰입으로 무경험 상태에서 대학로 주연 무대까지",
       period: "2023.02",
       priority: 9,
-      status: "verified",
+      status: "strong_but_needs_confirmation",
       tags: ["Growth", "Collaboration", "Presentation"],
-      summary: "연기 경험이 없는 상태에서 연극동아리 아름의 공연 주연을 맡아, 2개월간 발성/표정/감정 연기와 팀 합을 맞추고 대학로 무대에서 100여 명 관객 앞 2회 공연을 완주한 활동입니다.",
-      problem: "무대 공포와 발표 공포가 있었지만, 사람 앞에서 메시지를 전달하고 팀과 함께 결과물을 책임지는 경험이 필요했습니다.",
-      customerContext: "관객, 연출, 동료 배우가 모두 이해관계자인 공연 환경에서 개인의 불안보다 장면의 완성도와 팀의 리듬을 우선해야 했습니다.",
-      planningNarrative: "공연을 활동 이력으로만 두지 않고, 낯선 문제에 들어가 반복 훈련, 피드백 수용, 실전 발표로 공포를 낮춘 성장 프로세스로 정리했습니다.",
-      salesNarrative: "고객 인터뷰, 발표, 세일즈 상황에서 필요한 태도인 낯선 사람 앞에서 말하기, 긴장 속에서 메시지 유지하기, 팀 결과물 책임지기를 보여주는 보조 사례입니다.",
-      role: "연극동아리 아름 공연 `해더웨이 가의 유령`에서 주연 브란트 역을 맡은 것으로 공개 사본 자료에서 확인됩니다.",
+      summary: "연기 경험이 없는 상태에서 3개월 안에 주연 브란트 역을 완성해야 했습니다. 매일 자정까지 팀 연습을 이어가고 샤워 시간 1시간 30분까지 대본 암기에 사용해, 혜화 대학로에서 1박 2일간 총 200명의 관객 앞 공연과 전석 매진을 완수했습니다.",
+      problem: "연기 경험과 무대 자신감이 모두 부족한 상태에서 단 3개월 안에 표정, 행동, 발성, 대본을 실제 공연 수준으로 끌어올려야 했습니다. 개인의 준비 부족이 곧바로 팀 전체 장면의 완성도를 떨어뜨리는 상황이었습니다.",
+      customerContext: "매일 자정까지 이어지는 팀 연습을 소화하면서도 부족한 암기 시간을 확보해야 했습니다. 샤워 시간 1시간 30분까지 대본을 반복해 듣고 외우며, 연출과 동료 배우의 피드백을 다음 장면에 즉시 반영했습니다.",
+      planningNarrative: "막연히 오래 연습하기보다 대본 암기, 발성, 표정, 감정선, 장면 합을 나누어 반복했습니다. 혼자 해결되지 않는 감정 표현은 연출과 계속 소통하며 수정해 주연 역할의 완성도를 끌어올렸습니다.",
+      salesNarrative: "3개월의 준비를 혜화 대학로 실전 무대로 전환해 1박 2일간 총 200명의 관객 앞에서 공연했고 전석 매진을 달성했습니다. 긴장 속에서도 메시지를 유지하고 팀 결과물을 끝까지 책임지는 실행력을 증명했습니다.",
+      role: "연극동아리 아름의 `해더웨이 가의 유령`에서 주연 브란트 역을 맡아, 대본 암기부터 감정선·장면 합·실전 공연까지 역할 전 과정을 책임졌습니다.",
+      roiMetrics: [
+        {
+          label: "준비 기간",
+          value: "3개월",
+          description: "무경험 상태에서 주연 역할의 표정·행동·발성·대본을 완성",
+          kind: "input"
+        },
+        {
+          label: "몰입 강도",
+          value: "매일 자정까지",
+          description: "팀 연습에 더해 샤워 시간 1시간 30분까지 대본 암기에 활용",
+          kind: "input"
+        },
+        {
+          label: "실전 관객",
+          value: "총 200명",
+          description: "혜화 대학로에서 1박 2일간 주연 배우로 공연",
+          kind: "output"
+        },
+        {
+          label: "티켓 성과",
+          value: "전석 매진",
+          description: "제한된 준비 기간을 관객이 선택한 공연 결과로 전환",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "주연 배우 · 브란트 역",
+        percentage: 100,
+        percentageBasis: "주연 브란트 역할 수행 범위 기준",
+        ownership: "대본·감정선·장면 합·실전 공연의 역할 전 과정",
+        scope: [
+          "주연 브란트 역 대본 통암기",
+          "발성·표정·행동·감정선 집중 훈련",
+          "연출·배우와 장면별 합 조정",
+          "혜화 대학로 1박 2일 공연 완주"
+        ]
+      },
       qualitativeHighlights: [
-        "연기 경험이 없는 상태에서 주연 역할을 맡아 2개월간 반복 연습",
-        "대학로/혜화 공연장에서 100여 명 관객 앞 토/일 2회 공연 완주",
-        "포기하고 싶은 압박을 팀 책임감과 피드백 수용으로 돌파"
+        "집요함: 매일 자정까지 연습하고 샤워 시간 1시간 30분까지 대본 암기에 사용해 부족한 경험을 반복량으로 메웠습니다.",
+        "피드백 수용: 감정 표현이 막힐 때 연출과 끊임없이 소통하고, 받은 피드백을 다음 장면에 바로 반영했습니다.",
+        "팀 책임감: 주연의 준비 부족이 전체 공연을 흔든다는 압박을 회피하지 않고, 200명 관객 앞 전석 매진 공연까지 완주했습니다."
       ],
       executionScope: [
-        "대본 암기와 발성/표정/감정 연기 훈련",
+        "개인 시간을 활용한 대본 통암기",
+        "매일 자정까지 발성·표정·감정 연기 훈련",
         "연출, 배우들과 장면별 합과 감정선 조정",
-        "실전 공연 2회 완주",
+        "혜화 대학로 1박 2일 실전 공연 완주",
         "원본 이미지 3장을 배포 자산으로 저장"
       ],
       technicalHighlights: [
@@ -585,11 +882,11 @@ export const portfolioData = {
         "Feedback"
       ],
       architectureNotes: [
-        "개인 공포 인식",
-        "주연 역할 수락",
-        "반복 연습과 연출 피드백",
-        "관객 앞 실전 공연",
-        "발표 자신감과 팀 책임감으로 전환"
+        "3개월 타임어택과 무경험 상태 인식",
+        "대본·발성·표정·감정선 훈련 분리",
+        "매일 팀 연습과 개인 시간 암기 병행",
+        "연출 피드백을 장면에 반복 적용",
+        "200명 관객 앞 전석 매진 공연으로 전환"
       ],
       evidenceIds: ["areum-activity-pdf", "areum-image-1", "areum-image-2", "areum-image-3"],
       media: [
@@ -610,11 +907,11 @@ export const portfolioData = {
         }
       ],
       lessons: [
-        "발표 역량은 타고나는 것이 아니라 반복 노출, 피드백, 팀 책임감으로 훈련할 수 있습니다.",
-        "불편한 역할을 맡아 끝까지 해낸 경험은 고객 앞에서 말하고 설득하는 자신감으로 이어집니다."
+        "짧은 시간의 역량 격차는 몰입 시간뿐 아니라 피드백을 반영하는 속도로 줄일 수 있습니다.",
+        "불편한 역할을 맡아 끝까지 해낸 경험은 고객 앞에서도 긴장보다 전달할 메시지에 집중하게 만듭니다."
       ],
       improvements: [
-        "공연명, 공연장, 정확한 공연 일자를 추가 확인해 더 명확히 정리",
+        "관객 수와 매진 기록을 증명할 티켓·예매 자료를 공개 근거로 추가",
         "개인정보 보호를 위해 원본 사진 사용 범위를 계속 점검"
       ]
     },
@@ -632,6 +929,35 @@ export const portfolioData = {
       planningNarrative: "Figma, GitHub, Notion에 흩어진 협업 자료를 제품 개발 흐름으로 다시 읽었습니다.",
       salesNarrative: "기술 실력의 대표 사례보다는, 팀 프로젝트 안에서 협업 방식과 화면 구현 후보를 설명하는 보조 사례로 배치합니다.",
       role: "IBORY-PURPLE, CHAEWOOSONG 계정 확인 전까지 Footer, ProfileSetting, CommentList 등 직접 구현을 단정하지 않습니다.",
+      roiMetrics: [
+        {
+          label: "Input · 자료 재검토",
+          value: "3개 협업 도구",
+          description: "Figma, GitHub, Notion에 흩어진 오래된 프로젝트 기록 확인",
+          kind: "input"
+        },
+        {
+          label: "Output · 후보 범위",
+          value: "3개 UI 후보",
+          description: "Footer, ProfileSetting, CommentList의 기여 가능성을 분리",
+          kind: "output"
+        },
+        {
+          label: "Impact · 신뢰도",
+          value: "단정 표현 0",
+          description: "계정 확인 전 구현 범위를 사실처럼 포장하지 않는 공개 원칙 적용",
+          kind: "impact"
+        }
+      ],
+      contribution: {
+        level: "기여 범위 확인 중",
+        ownership: "계정·담당 화면 확인 필요",
+        scope: [
+          "React Router 기반 화면 흐름 후보",
+          "Footer, ProfileSetting, Comment UI 후보",
+          "PR·Issue·Branch 협업 기록 재구성"
+        ]
+      },
       qualitativeHighlights: [
         "공개 GitHub 기록을 다시 읽고 역할 후보와 확인 필요 사항을 분리",
         "PR, issue, branch 기반 팀 개발 흐름 파악",

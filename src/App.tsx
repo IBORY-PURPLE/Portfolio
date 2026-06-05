@@ -10,7 +10,7 @@ type Theme = "light" | "dark";
 function getInitialTheme(): Theme {
   const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
   if (storedTheme === "light" || storedTheme === "dark") return storedTheme;
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  return "light";
 }
 
 function getCurrentRoute() {
@@ -60,8 +60,8 @@ function TagList({ tags, strong = false }: { tags: string[]; strong?: boolean })
   );
 }
 
-function normalizePdfSrc(href: string, page: number) {
-  return `${href}#toolbar=0&navpanes=0&scrollbar=0&page=${page}`;
+function normalizePdfSrc(href: string, page: number, zoom: number) {
+  return `${href}#toolbar=0&navpanes=0&scrollbar=0&page=${page}&zoom=${zoom}`;
 }
 
 function safeLink(href: string) {
@@ -349,12 +349,14 @@ function MarkdownPreview({ item }: { item: Evidence }) {
 function PdfPreview({ item }: { item: Evidence }) {
   const href = evidenceHref(item);
   const [page, setPage] = useState(1);
+  const [zoom, setZoom] = useState(110);
   const [loaded, setLoaded] = useState(false);
   const pageCount = item.pages || 1;
   const safePage = Math.min(page, pageCount);
 
   useEffect(() => {
     setPage(1);
+    setZoom(110);
     setLoaded(false);
   }, [href]);
 
@@ -362,6 +364,12 @@ function PdfPreview({ item }: { item: Evidence }) {
     const safePage = Math.min(Math.max(nextPage, 1), pageCount);
     setLoaded(false);
     setPage(safePage);
+  }
+
+  function moveZoom(nextZoom: number) {
+    const safeZoom = Math.min(Math.max(nextZoom, 90), 150);
+    setLoaded(false);
+    setZoom(safeZoom);
   }
 
   return (
@@ -380,17 +388,26 @@ function PdfPreview({ item }: { item: Evidence }) {
           <button disabled={safePage >= pageCount} onClick={() => movePage(safePage + 1)} type="button">
             다음
           </button>
+          <button disabled={zoom <= 90} onClick={() => moveZoom(zoom - 20)} type="button">
+            축소
+          </button>
+          <button disabled={zoom >= 150} onClick={() => moveZoom(zoom + 20)} type="button">
+            확대
+          </button>
           <a href={href} rel="noreferrer" target="_blank">
             파일 열기
+          </a>
+          <a download href={href}>
+            다운로드
           </a>
         </div>
       </div>
       <div className="pdf-frame-wrap">
         {!loaded && <div className="pdf-loader">PDF 미리보기를 준비하는 중입니다.</div>}
         <iframe
-          key={`${href}-${safePage}`}
+          key={`${href}-${safePage}-${zoom}`}
           className="pdf-frame"
-          src={normalizePdfSrc(href, safePage)}
+          src={normalizePdfSrc(href, safePage, zoom)}
           title={`${item.title} PDF preview`}
           onLoad={() => setLoaded(true)}
         />
@@ -861,22 +878,6 @@ function DetailSection({
   );
 }
 
-function DetailParagraph({
-  id,
-  title,
-  content,
-}: {
-  id: string;
-  title: string;
-  content?: string;
-}) {
-  return (
-    <DetailSection id={id} title={title}>
-      <p>{content || "추가 확인 필요"}</p>
-    </DetailSection>
-  );
-}
-
 function DetailList({ items }: { items?: string[] }) {
   if (!items || !items.length) {
     return <p className="muted">추가 확인 필요</p>;
@@ -888,6 +889,192 @@ function DetailList({ items }: { items?: string[] }) {
         <li key={item}>{item}</li>
       ))}
     </ul>
+  );
+}
+
+function RoiBoard({ project }: { project: Project }) {
+  const inputMetrics = project.roiMetrics.filter((metric) => metric.kind === "input");
+  const outputMetrics = project.roiMetrics.filter((metric) => metric.kind !== "input");
+
+  return (
+    <section id="roi" className="roi-section" aria-labelledby="roi-title">
+      <div className="detail-section-heading">
+        <div>
+          <p className="eyebrow">Efficiency & ROI</p>
+          <h2 id="roi-title">투입한 노력은 어떤 결과로 이어졌나</h2>
+        </div>
+        <p>수치의 근거 상태와 역할 범위를 함께 표시했습니다.</p>
+      </div>
+      <div className="roi-flow">
+        <div className="roi-lane roi-lane-input">
+          <div className="roi-lane-heading">
+            <span>Input</span>
+            <strong>내가 통제한 시간과 행동</strong>
+          </div>
+          <div className="roi-grid">
+            {inputMetrics.map((metric) => (
+              <article className={`roi-card roi-${metric.kind}`} key={`${metric.label}-${metric.value}`}>
+                <span className="roi-card-badge">{metric.label}</span>
+                <strong>{metric.value}</strong>
+                <p>{metric.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+        <div className="roi-flow-arrow" aria-hidden="true">
+          <span>→</span>
+          <small>전환</small>
+        </div>
+        <div className="roi-lane roi-lane-output">
+          <div className="roi-lane-heading">
+            <span>Output</span>
+            <strong>만들어낸 결과와 변화</strong>
+          </div>
+          <div className="roi-grid">
+            {outputMetrics.map((metric) => (
+              <article className={`roi-card roi-${metric.kind}`} key={`${metric.label}-${metric.value}`}>
+                <span className="roi-card-badge">{metric.label}</span>
+                <strong>{metric.value}</strong>
+                <p>{metric.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ContributionBoard({ project, status }: { project: Project; status: StatusLabel }) {
+  const contribution = project.contribution;
+
+  return (
+    <DetailSection id="role" title="My Role & Contribution">
+      <div className="contribution-grid">
+        <div className="contribution-summary">
+          <p className="contribution-kicker">Contribution Level</p>
+          <strong>{contribution.level}</strong>
+          <span>{contribution.ownership}</span>
+          {typeof contribution.percentage === "number" && (
+            <div className="contribution-meter">
+              <div className="contribution-meter-label">
+                <span>역할 오너십</span>
+                <strong>{contribution.percentage}%</strong>
+              </div>
+              <div
+                className="contribution-meter-track"
+                role="progressbar"
+                aria-label={`${project.title} 역할 오너십`}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={contribution.percentage}
+              >
+                <span style={{ width: `${contribution.percentage}%` }} />
+              </div>
+              {contribution.percentageBasis && <small>{contribution.percentageBasis}</small>}
+            </div>
+          )}
+          {typeof contribution.percentage !== "number" && contribution.percentageBasis && (
+            <div className="contribution-unknown">
+              <span>기여율</span>
+              <strong>임의 산정하지 않음</strong>
+              <small>{contribution.percentageBasis}</small>
+            </div>
+          )}
+          <div className="contribution-verification">
+            <span className={`status-badge status-${project.status}`}>{status.label}</span>
+            <p>{status.description}</p>
+          </div>
+        </div>
+        <div className="contribution-detail">
+          <div>
+            <p className="contribution-kicker">내가 맡은 범위</p>
+            <DetailList items={contribution.scope} />
+          </div>
+          <div>
+            <p className="contribution-kicker">역할 근거</p>
+            <p>{project.role}</p>
+          </div>
+        </div>
+      </div>
+    </DetailSection>
+  );
+}
+
+function DeepDiveSection({ project }: { project: Project }) {
+  const story = [
+    {
+      step: "01",
+      label: "Problem",
+      title: "문제 직면",
+      description: project.problem,
+    },
+    {
+      step: "02",
+      label: "Qualitative Effort",
+      title: "정성적 노력",
+      description: project.customerContext,
+    },
+    {
+      step: "03",
+      label: "Solution",
+      title: "해결 방식",
+      description: project.planningNarrative,
+    },
+    {
+      step: "04",
+      label: "Outcome",
+      title: "성과와 설득 포인트",
+      description: project.salesNarrative,
+    },
+  ];
+
+  return (
+    <DetailSection id="deep-dive" title="Deep Dive & Qualitative Highlight">
+      <div className="story-flow">
+        {story.map((item) => (
+          <article className="story-step" key={item.step}>
+            <div className="story-index">{item.step}</div>
+            <div>
+              <span>{item.label}</span>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="highlight-board">
+        {project.qualitativeHighlights.map((highlight) => {
+          const [label, ...body] = highlight.split(":");
+          const hasLabel = body.length > 0;
+          return (
+            <article key={highlight}>
+              <span>{hasLabel ? label : "Highlight"}</span>
+              <p>{hasLabel ? body.join(":").trim() : highlight}</p>
+            </article>
+          );
+        })}
+      </div>
+    </DetailSection>
+  );
+}
+
+function Retrospective({ project }: { project: Project }) {
+  return (
+    <DetailSection id="retrospective" title="Retrospective">
+      <div className="retrospective-grid">
+        <article>
+          <span>Learned</span>
+          <h3>이번 경험이 바꾼 기준</h3>
+          <DetailList items={project.lessons} />
+        </article>
+        <article>
+          <span>Next Iteration</span>
+          <h3>다시 한다면 더 검증할 것</h3>
+          <DetailList items={project.improvements} />
+        </article>
+      </div>
+    </DetailSection>
   );
 }
 
@@ -912,10 +1099,11 @@ function ProjectMediaGallery({ media }: { media?: Project["media"] }) {
 
 function DetailNav() {
   const links = [
-    ["overview", "개요"],
-    ["problem", "문제"],
-    ["narrative", "기획/세일즈"],
+    ["roi", "ROI"],
+    ["role", "기여도"],
+    ["deep-dive", "Deep Dive"],
     ["execution", "실행"],
+    ["retrospective", "회고"],
     ["evidence", "근거"],
   ] as const;
 
@@ -949,59 +1137,48 @@ function ProjectDetailPage({ slug }: { slug: string }) {
         프로젝트 목록으로 돌아가기
       </a>
       <header className="detail-hero">
-        <div>
+        <div className="detail-hero-copy">
           <p className="eyebrow">
             {project.period} · {status.label}
           </p>
           <h1>{project.title}</h1>
-          <p>{project.subtitle}</p>
+          <p className="detail-subtitle">{project.subtitle}</p>
+          <p className="detail-summary">{project.summary}</p>
           <TagList tags={project.tags} />
         </div>
         <aside className="detail-status">
-          <strong>검증 상태</strong>
+          <span>My Contribution</span>
+          <strong>{project.contribution.level}</strong>
+          <p>{project.contribution.ownership}</p>
           <span className={`status-badge status-${project.status}`}>{status.label}</span>
-          <p>{status.description}</p>
         </aside>
       </header>
+      <RoiBoard project={project} />
       <div className="detail-layout">
         <DetailNav />
         <div className="detail-content">
-          <DetailParagraph id="overview" title="개요" content={project.summary} />
-          <DetailParagraph id="problem" title="문제" content={project.problem} />
-          <DetailParagraph id="customer" title="고객/이해관계자 맥락" content={project.customerContext} />
-          <DetailSection id="narrative" title="기획과 세일즈 내러티브">
-            <div className="two-column">
+          <ContributionBoard project={project} status={status} />
+          <DeepDiveSection project={project} />
+          <DetailSection id="execution" title="Execution & Technical Decisions">
+            <div className="execution-grid">
               <div>
-                <h3>Planning</h3>
-                <p>{project.planningNarrative}</p>
+                <p className="contribution-kicker">실행 범위</p>
+                <DetailList items={project.executionScope} />
               </div>
               <div>
-                <h3>Sales</h3>
-                <p>{project.salesNarrative}</p>
+                <p className="contribution-kicker">작업 흐름</p>
+                <DetailList items={project.architectureNotes} />
               </div>
             </div>
-          </DetailSection>
-          <DetailParagraph id="role" title="역할" content={project.role} />
-          <DetailSection id="execution" title="실행 범위">
-            <DetailList items={project.executionScope} />
-            <h3>Technical Highlights</h3>
-            <TagList tags={project.technicalHighlights} strong />
-          </DetailSection>
-          <DetailSection title="아키텍처와 작업 흐름">
-            <DetailList items={project.architectureNotes} />
-          </DetailSection>
-          <DetailSection title="정성적 하이라이트">
-            <DetailList items={project.qualitativeHighlights} />
+            <div className="technical-band">
+              <span>Technical Highlights</span>
+              <TagList tags={project.technicalHighlights} strong />
+            </div>
           </DetailSection>
           <ProjectMediaGallery media={project.media} />
+          <Retrospective project={project} />
           <DetailSection id="evidence" title="근거 자료">
             <EvidenceList ids={project.evidenceIds} />
-          </DetailSection>
-          <DetailSection title="배운 점">
-            <DetailList items={project.lessons} />
-          </DetailSection>
-          <DetailSection title="다음 개선">
-            <DetailList items={project.improvements} />
           </DetailSection>
         </div>
       </div>
