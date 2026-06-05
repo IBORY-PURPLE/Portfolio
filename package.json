@@ -7,6 +7,7 @@
     "dev": "vite --host 0.0.0.0",
     "start": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build",
+    "lint": "eslint .",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit"
   },
@@ -15,10 +16,14 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^5.0.0",
+    "@eslint/js": "^10.0.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
     "typescript": "^5.8.0",
+    "typescript-eslint": "^8.60.1",
     "vite": "^7.0.0"
   }
 }
