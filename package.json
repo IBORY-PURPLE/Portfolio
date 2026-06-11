@@ -2,13 +2,14 @@
   "name": "song-chaewoo-internship-portfolio",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Static portfolio website for internship applications.",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "start": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build",
+    "dev": "node scripts/local-dev-server.cjs",
+    "start": "node scripts/local-dev-server.cjs",
+    "build": "tsc --noEmit && vite build --configLoader native",
     "lint": "eslint .",
-    "preview": "vite preview --host 0.0.0.0",
+    "preview": "vite preview --configLoader native --host 127.0.0.1 --port 4174",
     "check": "tsc --noEmit"
   },
   "dependencies": {

@@ -194,9 +194,9 @@ gcs-oishifood-md
 gcs-notion-daily-snippet-md
 gcs-kanban-md
 gcs-llm-api-md
-cert-history-pdf
-cert-linuxmaster-png
-cert-info-processing-jpg
+cert-history-public-redacted
+cert-linuxmaster-public-redacted
+cert-info-processing-public-redacted
 theater-arum-pdf
 ```
 

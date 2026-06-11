@@ -34,12 +34,21 @@ export type ProjectMedia = {
   caption: string;
 };
 
+export type ProjectCover = {
+  src: string;
+  alt: string;
+  focalPoint?: string;
+  kind: "concept" | "documentary" | "product";
+};
+
 export type ProjectMetric = {
   label: string;
   value: string;
   description: string;
   kind: "input" | "output" | "impact";
 };
+
+export type ProjectResultLabel = "Result" | "Team Result" | "Evidence" | "Planned Experiment";
 
 export type ProjectContribution = {
   level: string;
@@ -58,6 +67,13 @@ export type Project = {
   status: ProjectStatus;
   tags: string[];
   summary: string;
+  cover: ProjectCover;
+  headlineImpact?: string;
+  cardProblem?: string;
+  cardAction?: string;
+  cardResult?: string;
+  resultLabel?: ProjectResultLabel;
+  productSignal?: string;
   problem: string;
   customerContext: string;
   planningNarrative: string;
@@ -115,8 +131,8 @@ export const portfolioData = {
     name: "송채우",
     englishName: "Song Chaewoo",
     email: "songchaewoo0@gmail.com",
-    headline: "고객 문제를 제품 흐름으로 정리하고, 필요한 기술까지 직접 연결하는 PM/사업개발형 빌더",
-    shortPitch: "고객 문제 정의, 기획/세일즈 문장화, React/API/AI 자동화를 실행까지 연결합니다.",
+    headline: "고객 문제를 제품 실험으로 연결하는 PM/Product Builder",
+    shortPitch: "현장 인터뷰와 수요 신호로 문제를 정의하고, 웹·API·AI 자동화로 검증 가능한 제품 실험까지 만듭니다.",
     location: "Seoul, Korea",
     education: {
       school: "가천대학교",
@@ -153,22 +169,16 @@ export const portfolioData = {
   },
   filters: [
     "전체",
-    "Planning",
-    "Research",
-    "Customer",
-    "Sales",
-    "Frontend",
-    "AI/API",
-    "Backend",
-    "Automation",
-    "Collaboration",
-    "Presentation",
-    "Growth"
+    "PM·기획",
+    "고객검증",
+    "개발·자동화",
+    "협업·발표",
+    "보조 사례"
   ],
   statusLabels: {
     verified: {
-      label: "자료 확인",
-      description: "내부 공개 사본 또는 공개 자료에서 확인된 내용입니다."
+      label: "근거 자료 확인",
+      description: "공개 근거 자료에서 확인 가능한 범위만 표시했습니다."
     },
     strong_but_needs_confirmation: {
       label: "강한 근거, 확인 필요",
@@ -185,10 +195,21 @@ export const portfolioData = {
       title: "WindMill",
       subtitle: "투자 판단 보조와 포트폴리오 추천 흐름을 가진 주식 웹 서비스",
       period: "2025.08",
-      priority: 1,
+      priority: 8,
       status: "strong_but_needs_confirmation",
       tags: ["Planning", "Customer", "Frontend", "AI/API", "Collaboration"],
       summary: "흩어진 주식 정보, 관심/보유 종목 관리, AI 예측 그래프를 한 흐름으로 묶어 사용자가 종목을 찾고 비교하고 판단하도록 돕는 프로젝트입니다.",
+      cover: {
+        src: "/assets/projects/covers/windmill-v4.webp",
+        alt: "WindMill 모바일 홈과 아바타 기반 포트폴리오, 주식 뉴스 화면을 재구성한 실제 제품 인터페이스",
+        kind: "product"
+      },
+      headlineImpact: "투자 정보 탐색, 관심/보유 관리, AI 예측을 하나의 판단 여정으로 묶은 확인 전 강점 사례",
+      cardProblem: "개인 투자자가 종목 정보와 예측, 보유/관심 상태를 따로 확인해야 함",
+      cardAction: "상세, 거래 로그, 예측 그래프, 추천 화면을 판단 흐름으로 연결",
+      cardResult: "3개 공개 근거가 있으나 최종 기여 범위 확인 전까지 보조 사례로 배치",
+      resultLabel: "Evidence",
+      productSignal: "사용자 판단 여정을 설계한 강점은 있으나, 채용용 대표 사례로 쓰기 전 역할 확인이 필요합니다.",
       problem: "개인 투자자는 종목 정보, 관심 종목, 보유 종목, 예측 데이터를 각각 다른 곳에서 확인해야 해 판단 흐름이 끊깁니다.",
       customerContext: "사용자가 종목을 검색하고, 보유/관심 상태를 관리하고, 예측 그래프와 포트폴리오 추천을 통해 다음 행동을 정하는 흐름을 중심으로 정리했습니다.",
       planningNarrative: "기술 스택보다 먼저 사용자가 '무엇을 보고 어떤 판단을 해야 하는가'를 잡고, 주식 상세, 거래 로그, AI 예측, 추천 화면을 단계적으로 연결했습니다.",
@@ -208,10 +229,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 검증 가능성",
+          label: "Evidence · 검증 가능성",
           value: "3개 공개 근거",
           description: "요약 PDF, 기여 후보 기록, README로 역할을 교차 확인",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -262,10 +283,21 @@ export const portfolioData = {
       title: "GCS Pulse Daily Snippet Agent",
       subtitle: "Obsidian 일기를 API와 AI 피드백 루프로 자동 업로드하는 에이전트 워크플로",
       period: "2026.06",
-      priority: 2,
+      priority: 3,
       status: "verified",
       tags: ["Planning", "AI/API", "Backend", "Automation"],
       summary: "GCS Pulse Daily/Weekly Snippet API와 웹 화면을 구현하고, Codex/Claude Code 에이전트가 Obsidian 기록을 구조화해 점수 기준을 통과할 때까지 개선하는 자동화 루프를 설계했습니다.",
+      cover: {
+        src: "/assets/projects/covers/gcs-daily-snippet.webp",
+        alt: "일기 기록이 API와 품질 검토 장치를 순환하며 개선되는 자동화 루프",
+        kind: "concept"
+      },
+      headlineImpact: "회고 업로드와 AI 피드백 개선을 매일 반복 가능한 자동화 루프로 전환",
+      cardProblem: "회고 작성, 업로드, 피드백 반영이 매일 수동 반복됨",
+      cardAction: "API 명세, 웹 화면, 에이전트 재시도 정책을 하나로 연결",
+      cardResult: "Obsidian 기록을 점수 기준 통과까지 자동 개선",
+      resultLabel: "Evidence",
+      productSignal: "사람이 반복하던 업무를 API와 피드백 루프로 줄이는 제품 운영 감각을 보여줍니다.",
       problem: "매일 작성하는 Obsidian 회고와 GCS Pulse 업로드 형식이 달라 반복 입력 비용이 컸고, AI 피드백 점수를 보고 다시 고치는 과정도 수동이었습니다.",
       customerContext: "사용자는 원문 일기를 그대로 공개하지 않으면서도, 회고 품질을 유지하고 매일 누락 없이 기록을 업로드하고 싶어 합니다.",
       planningNarrative: "핵심은 'AI가 글을 대신 쓰는 것'이 아니라, 근거 자료를 보존하고 서버의 평가 기준을 통과할 때까지 자동 개선하는 품질 관리 루프입니다.",
@@ -285,10 +317,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 운영 안정성",
+          label: "Evidence · 운영 안정성",
           value: "Retry + Rollback",
           description: "실패 시 재시도하고 최대 시도 초과 시 임시 업로드를 복구",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -329,6 +361,18 @@ export const portfolioData = {
         "최대 시도 실패 시 임시 업로드를 rollback"
       ],
       evidenceIds: ["gcs-daily-snippet-agent-md"],
+      media: [
+        {
+          src: "/assets/projects/evidence/daily-artifact-flow.webp",
+          alt: "Daily Snippet API와 AI 피드백 루프 실제 문서 기반 artifact preview",
+          caption: "실제 Markdown 근거 문서의 구현 흐름을 시각화한 artifact preview"
+        },
+        {
+          src: "/assets/projects/evidence/daily-artifact-stack.webp",
+          alt: "Daily Snippet 자동화 구현 범위 실제 문서 기반 artifact preview",
+          caption: "실제 근거 문서에 기록된 privacy, API, UI, agent 운영 범위"
+        }
+      ],
       lessons: [
         "자동화는 한 번 실행보다 실패와 재시도를 설계할 때 제품 경험이 됩니다.",
         "프롬프트 품질은 서버 rubric과 연결될 때 더 객관적으로 개선할 수 있습니다."
@@ -340,23 +384,34 @@ export const portfolioData = {
     },
     {
       slug: "gcs-hutzpa-creator-popups",
-      title: "GCS8 3차 팀 후츠파: 1인 창작자 오프라인 접점",
-      subtitle: "100명 DM, 28명 응답, 현장 방문으로 작은 오프라인 판매 접점을 검증한 팀 발표",
+      title: "1인 창작자 오프라인 접점 검증",
+      subtitle: "100명 DM, 28명 응답, 현장 방문으로 작은 오프라인 판매 접점의 문제 신호를 확인한 팀 발표",
       period: "2026.05",
-      priority: 3,
+      priority: 2,
       status: "verified",
       tags: ["Planning", "Research", "Customer", "Sales", "Presentation", "Collaboration"],
       summary: "1인 굿즈/일러스트 창작자가 기존 팔로워 밖의 신규 고객을 만나는 문제를 잡고, DM 반응과 오프라인 공간 방문으로 낮은 비용의 검증 흐름을 설계한 3차 팀 발표 프로젝트입니다.",
+      cover: {
+        src: "/assets/projects/covers/gcs-hutzpa-creator-popups.webp",
+        alt: "창작자의 작은 굿즈가 여러 오프라인 공간의 진열대로 연결되는 프리토타입 생태계",
+        kind: "concept"
+      },
+      headlineImpact: "100명 DM과 현장 방문으로 1인 창작자의 오프라인 진입 문제 신호를 확인",
+      cardProblem: "1인 창작자는 팔로워 밖 신규 고객을 만날 낮은 비용의 접점이 부족함",
+      cardAction: "DM 100명·응답 28명과 현장 방문을 바탕으로 공간 접촉 계획 설계",
+      cardResult: "작가 10명·공간 20곳 대상 유료 테스트 계획",
+      resultLabel: "Planned Experiment",
+      productSignal: "온라인 가설을 실제 고객/공간 접촉으로 좁히고 유료 테스트 가설을 구체화한 사례입니다.",
       problem: "소규모 1인 창작자는 온라인 노출이 기존 팔로워 중심이고, 대형 페어나 단독 팝업은 비용과 운영 부담이 커 신규 고객을 만날 작은 접점이 부족합니다.",
       customerContext: "서울일러스트페어 참여 창작자를 중심으로 DM 100명을 시도해 28명의 응답을 확보했고, 군자역 플리마켓과 독립서점 공간을 방문해 실제 오프라인 진입 비용과 운영 조건을 확인했습니다.",
       planningNarrative: "온라인 홍보 한계, 페어 비용, 공간 맥락을 분리해 '기존 방문객이 있는 오프라인 공간에서 소량으로 발견되는 구조'라는 가설로 좁혔습니다.",
-      salesNarrative: "작가 10명에게 유료 테스트를 제안하고, 사진관/꽃집/네일샵/카페 등 공간 20곳을 접촉해 공간 1곳에 3~5명분 굿즈를 소량 배치하는 프리토타이핑 흐름으로 설명했습니다.",
+      salesNarrative: "작가 10명에게 유료 테스트를 제안하고 사진관·꽃집·네일샵·카페 등 공간 20곳을 접촉하는 다음 실험을 설계했습니다. 공간 1곳에 3~5명분 굿즈를 소량 배치하는 프리토타이핑 계획입니다.",
       role: "발표대본에서 팀 후츠파 발표자로 확인됩니다. 팀 발표 자료 기준으로 문제 정의, 현장 검증, 다음 검증 계획을 함께 정리한 프로젝트입니다.",
       roiMetrics: [
         {
           label: "Input · 고객 접촉",
           value: "DM 100명",
-          description: "서울일러스트페어 참여 1인 창작자에게 문제 가설을 검증",
+          description: "서울일러스트페어 참여 1인 창작자에게 문제 신호를 확인",
           kind: "input"
         },
         {
@@ -406,6 +461,18 @@ export const portfolioData = {
         "유료 테스트와 공간 접촉으로 다음 검증 단위를 설계"
       ],
       evidenceIds: ["gcs-hutzpa-3-slides-pdf", "gcs-hutzpa-3-script-pdf"],
+      media: [
+        {
+          src: "/assets/projects/evidence/creator-01.webp",
+          alt: "1인 창작자 오프라인 접점 발표자료 첫 페이지",
+          caption: "실제 3차 팀 발표자료 · 문제와 실험 방향"
+        },
+        {
+          src: "/assets/projects/evidence/creator-02.webp",
+          alt: "1인 창작자 오프라인 접점 발표자료 두 번째 페이지",
+          caption: "실제 3차 팀 발표자료 · 고객과 공간 맥락"
+        }
+      ],
       lessons: [
         "아이디어가 설득력 있어 보여도 고객 반응, 공간 조건, 지불 의사를 분리해서 확인해야 합니다.",
         "발표 자료는 결과 보고가 아니라 다음 검증 행동을 만들 때 더 강한 제품 문서가 됩니다."
@@ -416,14 +483,118 @@ export const portfolioData = {
       ]
     },
     {
+      slug: "gcs-agentic-linkedin",
+      title: "AgenticLinkedIn",
+      subtitle: "AI agent를 LinkedIn형 프로필·네트워크 맥락으로 보여준 1차 AI Native 데모",
+      period: "2026.04",
+      priority: 4,
+      status: "verified",
+      tags: ["Planning", "AI/API", "Frontend", "Presentation", "Collaboration"],
+      summary: "Drive에서 별도 AgenticLinkedIn 폴더, 발표자료, 메인 이미지, 데모 영상이 확인된 AI Native 프로젝트입니다. 선원/고립된 바다 고객검증 사례와 섞이지 않도록 독립 대표 프로젝트로 분리했습니다.",
+      cover: {
+        src: "/assets/projects/covers/gcs-agentic-linkedin.webp",
+        alt: "AgenticLinkedIn의 AI agent 프로필과 네트워크형 데모 흐름을 표현한 콘셉트 커버",
+        kind: "concept"
+      },
+      headlineImpact: "AI agent 컨셉을 LinkedIn형 네트워크·프로필 경험으로 보여주는 독립 데모를 구성",
+      cardProblem: "AI agent 데모는 기능만 나열하면 역할과 협업 맥락이 빠르게 이해되지 않음",
+      cardAction: "LinkedIn형 프로필·네트워크 메타포로 agent 발견과 설명 흐름을 설계",
+      cardResult: "별도 발표자료·메인 이미지·데모 영상이 확인된 AI Native 사례",
+      resultLabel: "Evidence",
+      productSignal: "고객검증보다 AI Native 제품 컨셉과 데모 구조를 빠르게 만든 대표 사례입니다.",
+      problem: "AI agent 프로젝트는 기능만 보여주면 채용자나 협업자가 '이 agent가 어떤 역할을 하고 왜 필요한가'를 빠르게 이해하기 어렵습니다.",
+      customerContext: "팀은 agentic AI를 LinkedIn 같은 프로필·연결 맥락으로 보여주는 방향을 잡고, 발표자료와 메인 이미지, 데모 영상으로 별도 산출물을 남겼습니다.",
+      planningNarrative: "기술 데모를 기능 나열이 아니라 agent의 정체성, 관계, 활용 맥락이 드러나는 제품 설명 흐름으로 바꿨습니다.",
+      salesNarrative: "AgenticLinkedIn은 고립된 바다 선원 문제 검증과 다른 축의 AI Native 데모입니다. 사용자가 agent를 발견하고 비교하고 협업 가능성을 상상하도록 만드는 컨셉 사례로 보여줍니다.",
+      role: "Drive의 AgenticLinkedIn 폴더와 발표자료 파일명에서 송채우가 팀 발표 참여자로 확인됩니다. 공개 자료만으로 개인별 구현 범위를 단정하지 않습니다.",
+      roiMetrics: [
+        {
+          label: "Input · 산출물",
+          value: "3개 Drive 근거",
+          description: "발표자료, 메인 이미지, 데모 영상이 별도 폴더에서 확인됨",
+          kind: "input"
+        },
+        {
+          label: "Output · 제품 컨셉",
+          value: "Agent LinkedIn",
+          description: "agent 프로필과 연결 맥락을 LinkedIn형 데모로 구조화",
+          kind: "output"
+        },
+        {
+          label: "Evidence · 독립 산출물",
+          value: "독립 사례",
+          description: "고립된 바다 고객검증 사례와 섞이지 않도록 대표 프로젝트로 분리",
+          kind: "output"
+        }
+      ],
+      contribution: {
+        level: "팀 공동 기획·데모 발표",
+        percentageBasis: "개인별 구현 기여율은 Drive 자료만으로 미분해",
+        ownership: "AgenticLinkedIn 발표자료·데모 근거에서 팀 참여 확인",
+        scope: [
+          "Agentic AI 제품 컨셉 구조화",
+          "LinkedIn형 프로필·네트워크 메타포 정리",
+          "발표자료와 데모 흐름 구성 참여"
+        ]
+      },
+      qualitativeHighlights: [
+        "제품 컨셉: AI agent를 단순 기능이 아니라 프로필과 관계 맥락으로 설명",
+        "데모 구조: 발표자료, 메인 이미지, 데모 영상이 별도 Drive 폴더로 확인",
+        "포트폴리오 정리: 고립된 바다 고객검증 사례와 분리해 AI Native 역량을 별도 신호로 제시"
+      ],
+      executionScope: [
+        "AgenticLinkedIn 제품 컨셉 정리",
+        "AI agent 프로필·네트워크형 사용자 경험 설계",
+        "팀 발표자료와 데모 영상 흐름 구성",
+        "선원 문제 검증 프로젝트와의 포트폴리오 항목 분리"
+      ],
+      technicalHighlights: [
+        "AI Native",
+        "Agentic AI",
+        "Product Concept",
+        "Demo Video",
+        "Presentation"
+      ],
+      architectureNotes: [
+        "Agent를 프로필 단위로 설명",
+        "LinkedIn형 연결 맥락으로 발견·비교 흐름 구성",
+        "발표자료와 데모 영상으로 제품 컨셉 검증",
+        "고객검증 사례와 AI Native 데모 사례를 별도 카드로 분리"
+      ],
+      evidenceIds: [
+        "gcs-agentic-linkedin-slides-pdf",
+        "gcs-agentic-linkedin-main-image-drive",
+        "gcs-agentic-linkedin-demo-drive"
+      ],
+      lessons: [
+        "AI 데모는 기능보다 사용자가 이해할 역할과 맥락이 먼저 보여야 합니다.",
+        "서로 다른 스프린트 산출물은 하나의 카드에 섞지 않을 때 채용 담당자가 빠르게 이해합니다."
+      ],
+      improvements: [
+        "Drive 메인 이미지를 접근 가능한 로컬 WebP 커버로 교체",
+        "개인별 구현/기획 범위를 확인해 역할 문장을 더 날카롭게 분리"
+      ]
+    },
+    {
       slug: "gcs-hutzpa-construction-billing",
-      title: "GCS8 2차 팀 후츠파: 공사 기성청구 검증",
+      title: "공사 기성청구 고객 검증",
       subtitle: "9시간 현장 인터뷰로 데스크 리서치의 빈틈을 깨고 진짜 기성청구 문제를 찾다",
       period: "2026.05",
-      priority: 4,
+      priority: 1,
       status: "verified",
       tags: ["Planning", "Research", "Customer", "Sales", "Presentation", "Collaboration"],
       summary: "오전 10시부터 오후 7시까지 위례 건설 현장을 직접 돌며 인터뷰 거절을 감수했습니다. 덤프트럭 기사에서 DL건설 현장 관리자까지 이해관계자를 넓혀, 월말 기성청구 자료가 서로 연결되지 않는 진짜 Pain Point를 발견하고 사업 발표의 문제 정의로 전환했습니다.",
+      cover: {
+        src: "/assets/projects/covers/gcs-hutzpa-construction-billing.webp",
+        alt: "건설 현장의 흩어진 사진·도면·수량 자료가 하나의 라임색 흐름으로 연결되는 장면",
+        kind: "concept"
+      },
+      headlineImpact: "9시간 현장 인터뷰로 기성청구 병목을 찾고 초기 수요 신호까지 확인",
+      cardProblem: "데스크 리서치만으로는 기성청구의 진짜 병목과 타깃이 보이지 않음",
+      cardAction: "현장 방문과 이해관계자 인터뷰로 원청 공무 담당자 문제로 피벗",
+      cardResult: "조회 57명 중 신청 24명, 파일럿 확정 8명 신호 확보",
+      resultLabel: "Team Result",
+      productSignal: "틀린 가설을 현장 증거로 버리고 더 큰 문제로 피벗한 대표 고객 검증 사례입니다.",
       problem: "데스크 리서치만으로는 '누가 기성청구 과정에서 가장 큰 비용을 치르는가'가 보이지 않았습니다. 초기 덤프트럭 기사 가설을 고집하면 현장의 더 큰 병목을 놓칠 수 있는 상황이었습니다.",
       customerContext: "오전 10시부터 오후 7시까지 위례 건설 현장에 직접 찾아가 거절을 무릅쓰고 대화를 요청했습니다. 덤프트럭 기사에게서 출발해 DL건설 현장 관리자까지 인터뷰 범위를 넓히며, 사진·수량·도면을 월말마다 다시 맞춰야 하는 실무자의 목소리를 확보했습니다.",
       planningNarrative: "초기 가설이 틀릴 수 있음을 빠르게 인정하고, 현장에서 반복해서 나온 증언을 따라 타깃을 원청 공무 담당자로 피벗했습니다. 흩어진 공사 데이터가 '발주처가 검증 가능한 형태'로 연결되지 않는 구조를 핵심 문제로 정의했습니다.",
@@ -444,7 +615,7 @@ export const portfolioData = {
         },
         {
           label: "진짜 Pain Point",
-          value: "가설 검증 완료",
+          value: "문제 신호 확인",
           description: "데스크 리서치로 보이지 않던 기성청구 자료 연결 병목을 발견",
           kind: "output"
         },
@@ -491,6 +662,18 @@ export const portfolioData = {
         "랜딩페이지 신청/파일럿 확정 지표로 수요 신호 확인"
       ],
       evidenceIds: ["gcs-hutzpa-2-slides-pdf", "gcs-hutzpa-2-retro-md"],
+      media: [
+        {
+          src: "/assets/projects/evidence/construction-01.webp",
+          alt: "공사 기성청구 고객 검증 발표자료 첫 페이지",
+          caption: "실제 2차 팀 발표자료 · 고객 검증 개요"
+        },
+        {
+          src: "/assets/projects/evidence/construction-02.webp",
+          alt: "공사 기성청구 고객 검증 발표자료 두 번째 페이지",
+          caption: "실제 2차 팀 발표자료 · 문제 정의와 현장 맥락"
+        }
+      ],
       lessons: [
         "거절을 피하는 것보다 현장에 들어가는 것이 문제 발견 속도를 훨씬 빠르게 만듭니다.",
         "타깃을 바꾸는 판단은 실패가 아니라 더 강한 고객 증거를 따라가는 과정입니다."
@@ -501,14 +684,25 @@ export const portfolioData = {
       ]
     },
     {
-      slug: "gcs-pitumi-ai-native",
-      title: "GCS8 1차 피투미 AI Native",
-      subtitle: "선원 문제 가설을 인터뷰와 실패 회고로 재정의한 1차 팀 발표 프로젝트",
+      slug: "gcs-isolated-sea",
+      title: "고립된 바다 선원 문제 검증",
+      subtitle: "선원 문제 가설을 인터뷰와 실패 회고로 재정의한 1차 피투미 고객검증 프로젝트",
       period: "2026.04",
       priority: 5,
       status: "verified",
       tags: ["Planning", "Research", "Customer", "Presentation", "Collaboration"],
-      summary: "제목 앞 ! 표시가 있는 AI Native 발표 자료와 1차 발표/회고를 기반으로, 선원/해운업 가설을 검증하며 실패 원인을 리서치 게이트와 Kill Rule로 바꾼 프로젝트입니다.",
+      summary: "1차 피투미의 고립된 바다 발표자료와 회고를 기반으로, 선원/해운업 가설을 검증하며 실패 원인을 리서치 게이트와 Kill Rule로 바꾼 프로젝트입니다. AgenticLinkedIn 데모와 섞지 않고 별도 고객검증 사례로 정리했습니다.",
+      cover: {
+        src: "/assets/projects/covers/gcs-isolated-sea.webp",
+        alt: "잘못된 해운업 가설을 걷어내고 인터뷰 근거를 다음 검증 기준으로 통과시키는 장면",
+        kind: "concept"
+      },
+      headlineImpact: "실패한 선원 문제 가설을 리서치 게이트와 Kill Rule이라는 다음 실행 기준으로 전환",
+      cardProblem: "초기 선원/해운업 가설이 러프했고 질문 설계가 검증에 충분하지 않음",
+      cardAction: "인터뷰 8건과 회고를 통해 리서치·타깃·질문 부족을 분리",
+      cardResult: "다음 스프린트의 Gate + Kill Rule 기준 도출",
+      resultLabel: "Evidence",
+      productSignal: "성과만 포장하지 않고 약한 가설을 버리는 학습 속도를 보여주는 독립 고객검증 사례입니다.",
       problem: "초기 문제 가설은 실제 선원/해운업 맥락보다 러프했고, 데스크 리서치와 경쟁사/정책 확인 없이 인터뷰를 진행해 검증 밀도가 낮아졌습니다.",
       customerContext: "선원/해운업 종사자와 유사 타깃 인터뷰 8건을 진행했지만, 실제 핵심 타깃 수와 질문 설계가 충분하지 않아 문제의 Why를 깊게 확인하지 못했습니다.",
       planningNarrative: "발표 실패를 숨기지 않고 데스크 리서치 게이트, 팀 재구성, Kill Rule, 시간보다 밀도 기준이라는 다음 스프린트 원칙으로 바꿨습니다.",
@@ -528,10 +722,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 실행 기준",
+          label: "Evidence · 실행 기준",
           value: "Gate + Kill Rule",
           description: "다음 스프린트에서 약한 가설을 빠르게 거르는 규칙으로 전환",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -549,7 +743,7 @@ export const portfolioData = {
         "다음 도메인 진입 전 리서치 게이트와 Kill Rule을 세워 검증 방식을 개선"
       ],
       executionScope: [
-        "초기 AI Native 문제 가설 수립",
+        "초기 선원/고립된 바다 문제 가설 수립",
         "타깃/유사 타깃 인터뷰 진행",
         "실패 회고와 원인 분리",
         "다음 스프린트 검증 기준 재설계"
@@ -567,7 +761,7 @@ export const portfolioData = {
         "리서치 부족과 Why 부재를 실패 원인으로 분리",
         "게이트와 Kill Rule로 다음 실행 기준 재정의"
       ],
-      evidenceIds: ["gcs-pitumi-ai-native-pdf", "gcs-pitumi-slides-pdf", "gcs-pitumi-retro-md"],
+      evidenceIds: ["gcs-pitumi-slides-pdf", "gcs-pitumi-retro-public-summary-md"],
       lessons: [
         "고객 인터뷰는 많이 하는 것보다 질문 전 리서치와 Why 반복이 더 중요합니다.",
         "실패 회고가 다음 실행 기준으로 바뀔 때 포트폴리오에서도 신뢰 가능한 성장 근거가 됩니다."
@@ -586,6 +780,17 @@ export const portfolioData = {
       status: "verified",
       tags: ["AI/API", "Automation", "Backend", "Sales"],
       summary: "Claude Messages API, EXA Search API, Telegram Bot, GCS 회의실 API, Google Calendar CLI를 직접 호출해 검색, 요약, 예약, 초대 흐름을 자동화한 프로젝트군입니다.",
+      cover: {
+        src: "/assets/projects/covers/gcs-llm-api-automation.webp",
+        alt: "검색·메신저·캘린더·회의실 도구가 하나의 라임색 자동화 경로로 연결된 장면",
+        kind: "concept"
+      },
+      headlineImpact: "LLM, 검색, 메신저, 회의실/캘린더 API를 업무 완료 흐름으로 연결",
+      cardProblem: "AI/API 실험이 실제 업무 완료와 실패 복구까지 이어지지 않음",
+      cardAction: "검색·요약·예약·초대 흐름을 인증/fallback 포함 자동화로 묶음",
+      cardResult: "반복 운영 업무를 CLI/API 기반 실행 흐름으로 전환",
+      resultLabel: "Evidence",
+      productSignal: "데모가 아니라 사용자가 끝까지 완료해야 하는 작업 단위로 자동화를 설계했습니다.",
       problem: "LLM/API 실험은 데모로 끝나기 쉽지만, 실제 업무에서는 인증, 오류 처리, fallback, rollback, 환경변수 관리까지 연결되어야 합니다.",
       customerContext: "운영자와 팀원이 반복적으로 처리하는 검색 요약, 회고 업로드, 회의실 예약, 캘린더 초대 같은 업무를 자동화 대상으로 봤습니다.",
       planningNarrative: "각 API를 기능 단위로만 호출하지 않고, 사용자가 끝까지 완료해야 하는 업무 흐름으로 묶었습니다.",
@@ -605,10 +810,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 실패 복구",
+          label: "Evidence · 실패 복구",
           value: "Rollback 적용",
           description: "Calendar 생성 실패 시 앞선 회의실 예약까지 복구",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -646,6 +851,18 @@ export const portfolioData = {
         "회의실 예약과 캘린더 초대 사이에 rollback boundary 설정"
       ],
       evidenceIds: ["gcs-llm-api-md"],
+      media: [
+        {
+          src: "/assets/projects/evidence/llm-artifact-flow.webp",
+          alt: "LLM과 외부 API 오케스트레이션 실제 문서 기반 artifact preview",
+          caption: "실제 Markdown 근거 문서에 기록된 검색·요약·예약·초대 흐름"
+        },
+        {
+          src: "/assets/projects/evidence/llm-artifact-recovery.webp",
+          alt: "LLM API 자동화 실패 복구 실제 문서 기반 artifact preview",
+          caption: "실제 근거 문서에 기록된 인증·오류 기록·fallback·rollback"
+        }
+      ],
       lessons: [
         "API 연동은 성공 케이스보다 인증 실패와 응답 shape 변화에 강해야 합니다.",
         "자동화는 사용자에게 보이지 않는 실패 복구 정책까지 포함해야 신뢰를 얻습니다."
@@ -664,6 +881,16 @@ export const portfolioData = {
       status: "verified",
       tags: ["Frontend", "Sales", "Planning", "Customer"],
       summary: "Oishifood 팀의 콘셉트와 멤버별 미식 스토리를 hero, scroll journey, member modal, newsletter flow로 구성한 팀 소개형 랜딩 페이지입니다.",
+      cover: {
+        src: "/assets/projects/covers/oishifood-landing.webp",
+        alt: "팀원별 미식 이야기가 하나의 스크롤 리본을 따라 뉴스레터 참여로 이어지는 장면",
+        kind: "concept"
+      },
+      headlineImpact: "팀 정체성과 참여 행동을 스크롤 인터랙션, 멤버 모달, 뉴스레터 흐름으로 연결",
+      cardProblem: "팀 소개가 나열식이면 방문자가 정체성과 다음 행동을 기억하기 어려움",
+      cardAction: "Hero, Scroll Journey, Members, Newsletter를 하나의 미식 스토리로 구성",
+      cardResult: "구독과 발송까지 이어지는 랜딩 페이지 행동 흐름 구현",
+      productSignal: "시각 완성도와 세일즈 표면 설계를 보여주는 프론트엔드 보조 사례입니다.",
       problem: "팀 소개는 나열식이면 기억에 남기 어렵고, 각 멤버의 캐릭터와 팀의 톤을 한 화면 흐름으로 설득해야 했습니다.",
       customerContext: "방문자가 팀의 정체성, 멤버 캐릭터, 미식 취향, 뉴스레터 행동까지 자연스럽게 이해하도록 구성했습니다.",
       planningNarrative: "스크롤 진행도와 카드 전환으로 팀의 미식 여정을 이야기처럼 읽게 만들었습니다.",
@@ -683,10 +910,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 행동 연결",
+          label: "Output · 행동 연결",
           value: "구독 → 발송",
           description: "팀 소개에서 끝나지 않고 Supabase·Resend 참여 흐름으로 연결",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -737,10 +964,21 @@ export const portfolioData = {
       title: "Kanban Backend / CLI",
       subtitle: "FastAPI 백엔드와 Click CLI를 연결한 팀용 칸반 운영 도구",
       period: "2026.04",
-      priority: 8,
+      priority: 9,
       status: "verified",
       tags: ["Backend", "Automation", "Collaboration"],
       summary: "Google OAuth 로그인, 워크스페이스/보드/컬럼/카드 API, Click CLI를 하나의 저장소에서 관리하는 칸반 백엔드/CLI 프로젝트입니다.",
+      cover: {
+        src: "/assets/projects/covers/kanban-backend-cli.webp",
+        alt: "작업 카드가 인증과 API 구조를 통과하며 이동하는 미니어처 칸반 운영 시스템",
+        kind: "concept"
+      },
+      headlineImpact: "FastAPI 백엔드와 Click CLI를 같은 도메인 모델로 묶어 팀 작업 운영 표면을 정리",
+      cardProblem: "협업 도구는 웹 화면 외에도 인증, API, CLI, 테스트 재현성이 필요함",
+      cardAction: "Workspace/Board/Column/Card 모델과 OAuth, CLI 명령 흐름을 연결",
+      cardResult: "API + CLI + Test/Lint 기반의 로컬 운영 흐름 정리",
+      resultLabel: "Evidence",
+      productSignal: "화면보다 운영 도구와 재현성에 가까운 백엔드/CLI 실행 사례입니다.",
       problem: "팀 협업 도구는 웹 화면뿐 아니라 로컬 CLI, 인증, 데이터 모델, 테스트 흐름까지 맞아야 실사용이 가능합니다.",
       customerContext: "개발자가 로컬에서 빠르게 백엔드를 띄우고 CLI로 워크스페이스, 보드, 컬럼, 카드를 조작하는 상황을 목표로 했습니다.",
       planningNarrative: "API와 CLI가 같은 도메인 모델을 공유하도록, 인증과 리소스 조작을 명령어 흐름으로 정리했습니다.",
@@ -760,10 +998,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 재현성",
+          label: "Evidence · 재현성",
           value: "Test + Lint",
           description: "pytest와 ruff, 운영 문서로 로컬 실행과 검증 흐름 정리",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -815,10 +1053,20 @@ export const portfolioData = {
       title: "연극동아리 아름",
       subtitle: "3개월의 집요한 몰입으로 무경험 상태에서 대학로 주연 무대까지",
       period: "2023.02",
-      priority: 9,
+      priority: 10,
       status: "strong_but_needs_confirmation",
       tags: ["Growth", "Collaboration", "Presentation"],
       summary: "연기 경험이 없는 상태에서 3개월 안에 주연 브란트 역을 완성해야 했습니다. 매일 자정까지 팀 연습을 이어가고 샤워 시간 1시간 30분까지 대본 암기에 사용해, 혜화 대학로에서 1박 2일간 총 200명의 관객 앞 공연과 전석 매진을 완수했습니다.",
+      cover: {
+        src: "/assets/projects/areum/areum-3.jpg",
+        alt: "연극동아리 아름의 실제 무대 장면",
+        kind: "documentary"
+      },
+      headlineImpact: "무경험 상태에서 3개월 몰입으로 주연 무대와 전석 매진 공연까지 완주",
+      cardProblem: "주연 역할을 맡았지만 연기 경험과 무대 자신감이 모두 부족함",
+      cardAction: "매일 자정까지 팀 연습하고 개인 시간까지 대본 암기와 피드백 반영에 사용",
+      cardResult: "혜화 대학로 1박 2일 공연, 총 200명 관객 앞 전석 매진",
+      productSignal: "PM 대표 사례보다는 압박 속 피드백 수용과 몰입도를 보여주는 성장 사례입니다.",
       problem: "연기 경험과 무대 자신감이 모두 부족한 상태에서 단 3개월 안에 표정, 행동, 발성, 대본을 실제 공연 수준으로 끌어올려야 했습니다. 개인의 준비 부족이 곧바로 팀 전체 장면의 완성도를 떨어뜨리는 상황이었습니다.",
       customerContext: "매일 자정까지 이어지는 팀 연습을 소화하면서도 부족한 암기 시간을 확보해야 했습니다. 샤워 시간 1시간 30분까지 대본을 반복해 듣고 외우며, 연출과 동료 배우의 피드백을 다음 장면에 즉시 반영했습니다.",
       planningNarrative: "막연히 오래 연습하기보다 대본 암기, 발성, 표정, 감정선, 장면 합을 나누어 반복했습니다. 혼자 해결되지 않는 감정 표현은 연출과 계속 소통하며 수정해 주연 역할의 완성도를 끌어올렸습니다.",
@@ -920,10 +1168,21 @@ export const portfolioData = {
       title: "Footstep",
       subtitle: "React 팀 프로젝트와 GitHub 협업 흐름을 재구성한 UMC 프로젝트",
       period: "2022.06",
-      priority: 10,
+      priority: 11,
       status: "needs_user_confirmation",
       tags: ["Frontend", "Collaboration"],
       summary: "React Router, CSS Module, Figma, GitHub, Notion 협업 자료를 기반으로 팀 개발 흐름과 후보 기여를 조심스럽게 정리한 프로젝트입니다.",
+      cover: {
+        src: "/assets/projects/covers/footstep.webp",
+        alt: "오래된 협업 기록 사이에서 확인 가능한 기여 근거만 라임색 발자국으로 연결한 장면",
+        kind: "concept"
+      },
+      headlineImpact: "오래된 React 팀 프로젝트 기록을 근거 상태별로 다시 분리한 확인 필요 사례",
+      cardProblem: "오래된 협업 기록은 실제 담당 범위와 계정 소유가 흐려질 수 있음",
+      cardAction: "Figma, GitHub, Notion 기록을 역할 후보와 확인 필요 사항으로 재분류",
+      cardResult: "계정 확인 전 단정 표현 없이 보조 사례로만 노출",
+      resultLabel: "Evidence",
+      productSignal: "역할 과장을 피하고 근거 상태를 투명하게 다루는 공개 원칙 사례입니다.",
       problem: "오래된 팀 프로젝트는 실제 담당 범위와 계정 소유 확인이 흐려질 수 있어, 포트폴리오 문장으로 쓰려면 과장 없이 근거를 분리해야 합니다.",
       customerContext: "채용 담당자에게는 초기 팀 협업 경험으로, 기술 면접관에게는 역할 확인 필요 상태를 솔직하게 보여주는 보조 사례입니다.",
       planningNarrative: "Figma, GitHub, Notion에 흩어진 협업 자료를 제품 개발 흐름으로 다시 읽었습니다.",
@@ -943,10 +1202,10 @@ export const portfolioData = {
           kind: "output"
         },
         {
-          label: "Impact · 신뢰도",
+          label: "Evidence · 신뢰도",
           value: "단정 표현 0",
           description: "계정 확인 전 구현 범위를 사실처럼 포장하지 않는 공개 원칙 적용",
-          kind: "impact"
+          kind: "output"
         }
       ],
       contribution: {
@@ -997,19 +1256,19 @@ export const portfolioData = {
       title: "한국사능력검정시험 1급",
       issuer: "국사편찬위원회",
       date: "2026.02.20",
-      evidenceId: "cert-history-pdf"
+      evidenceId: "cert-history-public-redacted"
     },
     {
       title: "리눅스마스터 2급",
       issuer: "한국정보통신진흥협회",
       date: "2026.01.02",
-      evidenceId: "cert-linuxmaster-png"
+      evidenceId: "cert-linuxmaster-public-redacted"
     },
     {
       title: "정보처리기능사",
       issuer: "과학기술정보통신부",
       date: "2023.05.01",
-      evidenceId: "cert-info-processing-jpg"
+      evidenceId: "cert-info-processing-public-redacted"
     }
   ],
   evidence: [
@@ -1098,16 +1357,6 @@ export const portfolioData = {
       note: "인터뷰, 피벗, 팀 의사결정 개선점을 정리한 2차 회고 자료."
     },
     {
-      id: "gcs-pitumi-ai-native-pdf",
-      title: "!GCS8기 1조피투미 AI Native PDF",
-      type: "PDF",
-      url: "/evidence/gcs-pitumi-ai-native.pdf",
-      assetUrl: "/evidence/gcs-pitumi-ai-native.pdf",
-      pages: 9,
-      visibility: "public",
-      note: "제목 앞 ! 표시가 있어 필수 반영한 GCS 1차 AI Native 발표 자료."
-    },
-    {
       id: "gcs-pitumi-slides-pdf",
       title: "GCS8 1차 피투미 발표자료",
       type: "PDF",
@@ -1118,13 +1367,39 @@ export const portfolioData = {
       note: "1차 팀 발표 슬라이드 자료."
     },
     {
-      id: "gcs-pitumi-retro-md",
-      title: "GCS8 1차 피투미 발표 회고",
+      id: "gcs-pitumi-retro-public-summary-md",
+      title: "GCS8 1차 피투미 공개 회고 요약",
       type: "Markdown",
-      url: "/evidence/gcs-pitumi-retro.md",
-      assetUrl: "/evidence/gcs-pitumi-retro.md",
+      url: "/evidence/gcs-pitumi-retro-public-summary.md",
+      assetUrl: "/evidence/gcs-pitumi-retro-public-summary.md",
       visibility: "public",
-      note: "선원/해운업 가설 검증 실패와 다음 스프린트 원칙을 정리한 1차 회고 자료."
+      note: "실명, 음성 전사 원문, 내부 평가를 제외하고 검증 수치와 학습만 정리한 외부 공개용 요약."
+    },
+    {
+      id: "gcs-agentic-linkedin-slides-pdf",
+      title: "GCS8 1차 AgenticLinkedIn 발표자료",
+      type: "PDF",
+      url: "/evidence/gcs-agentic-linkedin-slides.pdf",
+      assetUrl: "/evidence/gcs-agentic-linkedin-slides.pdf",
+      pages: 9,
+      visibility: "public",
+      note: "Drive에서 확인한 별도 AgenticLinkedIn 발표자료. 기존 피투미 파일명으로 섞여 있던 로컬 PDF를 AgenticLinkedIn 근거로 분리했습니다."
+    },
+    {
+      id: "gcs-agentic-linkedin-main-image-drive",
+      title: "AgenticLinkedIn 메인 이미지",
+      type: "Drive Image",
+      url: "https://drive.google.com/file/d/1Uz-4_Uc899Muv2G76cTzw_3-xirW-ZFd/view?usp=drivesdk",
+      visibility: "public",
+      note: "AgenticLinkedIn Drive 폴더의 메인 이미지. WebP 커버 최적화는 원본 다운로드 권한이 열릴 때 교체합니다."
+    },
+    {
+      id: "gcs-agentic-linkedin-demo-drive",
+      title: "AgenticLinkedIn 데모 영상",
+      type: "Drive Video",
+      url: "https://drive.google.com/file/d/1tLaNiIdB8tpIo88xm0JDwjsGgQNWZ6T4/view?usp=drivesdk",
+      visibility: "public",
+      note: "AgenticLinkedIn Drive 폴더에서 확인한 AI Native 데모 영상."
     },
     {
       id: "gcs-llm-api-md",
@@ -1225,32 +1500,31 @@ export const portfolioData = {
       note: "배포 자산으로 저장한 무대 장면 기록."
     },
     {
-      id: "cert-history-pdf",
+      id: "cert-history-public-redacted",
       title: "한국사능력검정 1급 증빙",
-      type: "PDF",
-      url: "/evidence/cert-history.pdf",
-      assetUrl: "/evidence/cert-history.pdf",
-      pages: 1,
+      type: "Image",
+      url: "/evidence/cert-history.png",
+      assetUrl: "/evidence/cert-history.png",
       visibility: "public",
-      note: "자격증 증빙. 배포본에 포함되는 내부 공개 사본."
+      note: "한국사능력검정시험 1급 합격 증빙 원본."
     },
     {
-      id: "cert-linuxmaster-png",
+      id: "cert-linuxmaster-public-redacted",
       title: "리눅스마스터 2급 증빙",
       type: "Image",
       url: "/evidence/cert-linuxmaster.png",
       assetUrl: "/evidence/cert-linuxmaster.png",
       visibility: "public",
-      note: "자격증 증빙. 배포본에 포함되는 내부 공개 사본."
+      note: "리눅스마스터 2급 합격 증빙 원본."
     },
     {
-      id: "cert-info-processing-jpg",
+      id: "cert-info-processing-public-redacted",
       title: "정보처리기능사 증빙",
       type: "Image",
       url: "/evidence/cert-info-processing.jpg",
       assetUrl: "/evidence/cert-info-processing.jpg",
       visibility: "public",
-      note: "자격증 증빙. 배포본에 포함되는 내부 공개 사본."
+      note: "정보처리기능사 합격 증빙 원본."
     }
   ]
 } satisfies PortfolioData;

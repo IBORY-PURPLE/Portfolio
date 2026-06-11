@@ -16,23 +16,39 @@ $assets = @(
   @{ Id = "1I_ui87ovbbuGsjkpc98AFFOCskekoVDw"; File = "gcs-hutzpa-creator-popups-script.pdf"; Kind = "PDF"; Pages = 4 },
   @{ Id = "14rZpe-I65cO479a9CKTAsA7m18kPwjol"; File = "gcs-hutzpa-construction-billing-slides.pdf"; Kind = "PDF"; Pages = 12 },
   @{ Id = "14LOzhbPe8ehuGeOasb9TKbO8LQwMazWk"; File = "gcs-hutzpa-construction-billing-retro.md"; Kind = "Markdown" },
-  @{ Id = "1EQFDs8rmybQMk8hdynmPaB1fOUov_Y2I"; File = "gcs-pitumi-ai-native.pdf"; Kind = "PDF"; Pages = 9 },
+  @{ Id = "1EQFDs8rmybQMk8hdynmPaB1fOUov_Y2I"; File = "gcs-agentic-linkedin-slides.pdf"; Kind = "PDF"; Pages = 9 },
   @{ Id = "1O6ZbwXwzF8m2Sj1tu6GMrugyd5QQwNts"; File = "gcs-pitumi-slides.pdf"; Kind = "PDF"; Pages = 17 },
-  @{ Id = "1p8ZpL6iSF_TGsf5oe3sMdvdnWYCPIsD_"; File = "gcs-pitumi-retro.md"; Kind = "Markdown" },
   @{ Id = "10cFFZt84l3f7qejaBRATWQLnbzYoaGVq"; File = "gcs-llm-api-automation.md"; Kind = "Markdown" },
   @{ Id = "1iTYbX3tgnxtpRzoPHn7kYmMdaynbshS7"; File = "oishifood-landing.md"; Kind = "Markdown" },
   @{ Id = "1XTJoWJWB6ibebQgaiPnM9dl20PRX9ZHq"; File = "gcs-kanban-backend-cli.md"; Kind = "Markdown" },
   @{ Id = "1QlTjx9jj2YGkrk_QpGg5Q2pjQyxgkLOv"; File = "footstep-contribution-profile.md"; Kind = "Markdown" },
   @{ Id = "1UPBuhT5BxFfl0YHs8spMs6tyOPhnNWQt"; File = "footstep-readme.md"; Kind = "Markdown" },
-  @{ Id = "19ZpHfAMMvdp6AjU2yzMwLsd2YL9hCEOM"; File = "areum-activity.pdf"; Kind = "PDF"; Pages = 2 },
-  @{ Id = "1bl5iVRabVU3i2qNll9Xy5qAeI2gl5_eA"; File = "cert-history.pdf"; Kind = "PDF"; Pages = 1 },
-  @{ Id = "1zfJdhf0QRGbtx_n7rS1UFOavzI1a4RMD"; File = "cert-linuxmaster.png"; Kind = "Image" },
-  @{ Id = "1PczfUnx_Uo3KvczqHTnjbyKiJhWjCyUA"; File = "cert-info-processing.jpg"; Kind = "Image" }
+  @{ Id = "19ZpHfAMMvdp6AjU2yzMwLsd2YL9hCEOM"; File = "areum-activity.pdf"; Kind = "PDF"; Pages = 2 }
+)
+
+$publicOnlyAssets = @(
+  @{ File = "gcs-pitumi-retro-public-summary.md"; Kind = "Markdown" },
+  @{ File = "cert-history.png"; Kind = "Image" },
+  @{ File = "cert-linuxmaster.png"; Kind = "Image" },
+  @{ File = "cert-info-processing.jpg"; Kind = "Image" }
+)
+
+# Certificate originals are intentionally published per owner decision.
+# Only the internal retrospective original stays forbidden in public assets.
+$forbiddenPublicFiles = @(
+  "gcs-pitumi-retro.md"
 )
 
 $sensitivePattern = "([A-Za-z0-9._%+-]+@(?!example\.com)[A-Za-z0-9.-]+\.[A-Za-z]{2,}|01[016789][-. ]?[0-9]{3,4}[-. ]?[0-9]{4}|sk-[A-Za-z0-9]|AKIA[0-9A-Z]{16})"
 
 New-Item -ItemType Directory -Force -Path $destination | Out-Null
+
+foreach ($fileName in $forbiddenPublicFiles) {
+  $forbiddenPath = Join-Path $destination $fileName
+  if (Test-Path -LiteralPath $forbiddenPath) {
+    throw "Forbidden sensitive public asset exists: $fileName"
+  }
+}
 
 foreach ($asset in $assets) {
   $output = Join-Path $destination $asset.File
@@ -63,5 +79,31 @@ foreach ($asset in $assets) {
     Kind = $asset.Kind
     Bytes = $file.Length
     Pages = $asset.Pages
+  }
+}
+
+foreach ($asset in $publicOnlyAssets) {
+  $output = Join-Path $destination $asset.File
+  if (-not (Test-Path -LiteralPath $output)) {
+    throw "Missing reviewed public evidence asset: $($asset.File)"
+  }
+
+  $file = Get-Item -LiteralPath $output
+  if ($file.Length -le 0) {
+    throw "Empty reviewed public evidence asset: $($asset.File)"
+  }
+
+  if ($asset.Kind -eq "Markdown") {
+    $content = Get-Content -LiteralPath $output -Raw
+    if ($content -match $sensitivePattern) {
+      throw "Potential sensitive text in reviewed public asset: $($asset.File)"
+    }
+  }
+
+  [pscustomobject]@{
+    File = $asset.File
+    Kind = $asset.Kind
+    Bytes = $file.Length
+    Pages = $null
   }
 }

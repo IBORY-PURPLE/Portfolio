@@ -5,3 +5,8 @@ dist/
 *.log
 *.local
 .codex-local-server*
+tmp-*
+tmp-qa-screenshots/
+references/
+docs/Memo.md
+.gstack/

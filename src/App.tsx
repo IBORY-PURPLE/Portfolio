@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode, type SyntheticEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type SyntheticEvent } from "react";
 import { portfolioData } from "./data";
 import type { Evidence, Project, ProjectStatus, StatusLabel, Visibility } from "./data";
 
@@ -48,6 +48,76 @@ function getEvidence(id: string): Evidence | undefined {
   return data.evidence.find((item) => item.id === id);
 }
 
+function projectEvidenceCount(project: Project) {
+  return project.evidenceIds
+    .map(getEvidence)
+    .filter((item): item is Evidence => (item ? item.visibility === "public" : false)).length;
+}
+
+function projectPrimaryOutcome(project: Project) {
+  return (
+    project.roiMetrics.find((metric) => metric.kind === "impact") ??
+    project.roiMetrics.find((metric) => metric.kind === "output") ??
+    project.roiMetrics[0]
+  );
+}
+
+const FILTER_GROUPS: Record<string, string[]> = {
+  "PM·기획": ["Planning", "Sales"],
+  "고객검증": ["Research", "Customer"],
+  "개발·자동화": ["Frontend", "AI/API", "Backend", "Automation"],
+  "협업·발표": ["Collaboration", "Presentation"],
+  "보조 사례": ["Growth"],
+};
+
+function projectHeadlineImpact(project: Project) {
+  return project.headlineImpact || project.summary;
+}
+
+function projectCardResult(project: Project) {
+  const outcome = projectPrimaryOutcome(project);
+  return project.cardResult || (outcome ? `${outcome.value} · ${outcome.description}` : project.salesNarrative);
+}
+
+function projectResultLabel(project: Project) {
+  return project.resultLabel || "Result";
+}
+
+function evidenceTypeLabel(item: Evidence) {
+  const raw = `${item.type} ${evidenceHref(item)}`.toLowerCase();
+  if (raw.includes("github")) return "GitHub";
+  if (raw.includes("deploy") || raw.includes("vercel") || raw.includes("live")) return "Deployment";
+  if (raw.includes("pdf")) return "PDF";
+  if (raw.includes("markdown") || raw.endsWith(".md")) return "Markdown";
+  if (raw.includes("image") || /\.(png|jpe?g|webp|gif|avif)/.test(raw)) return "Image";
+  return "Link";
+}
+
+function projectEvidenceTypeSummary(project: Project) {
+  const labels = project.evidenceIds
+    .map(getEvidence)
+    .filter((item): item is Evidence => (item ? item.visibility === "public" : false))
+    .map(evidenceTypeLabel);
+  const uniqueLabels = Array.from(new Set(labels)).slice(0, 3);
+  return uniqueLabels.length ? uniqueLabels.join(" · ") : "공개 근거";
+}
+
+function matchesProjectFilter(project: Project, filter: string) {
+  if (filter === "전체") return true;
+  const tags = FILTER_GROUPS[filter] ?? [filter];
+  return tags.some((tag) => project.tags.includes(tag));
+}
+
+function projectCoverLabel(project: Project) {
+  if (project.cover.kind === "concept") return "Concept visual · AI-generated";
+  if (project.cover.kind === "product") return "Actual product interface";
+  return "Documentary photo";
+}
+
+function projectCoverPosition(project: Project) {
+  return project.cover.focalPoint || "center";
+}
+
 function TagList({ tags, strong = false }: { tags: string[]; strong?: boolean }) {
   return (
     <div className={`tag-row${strong ? " tag-row-strong" : ""}`}>
@@ -66,6 +136,45 @@ function normalizePdfSrc(href: string, page: number, zoom: number) {
 
 function safeLink(href: string) {
   return href.startsWith("http") || href.startsWith("/") || href.startsWith("#") ? href : "#";
+}
+
+function revealDelayStyle(delay: number): CSSProperties {
+  return { "--reveal-delay": `${delay}ms` } as CSSProperties;
+}
+
+function useScrollReveal<T extends HTMLElement>() {
+  const ref = useRef<T | null>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches || !("IntersectionObserver" in window)) {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          setVisible(true);
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -12% 0px", threshold: 0.18 },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  return {
+    ref,
+    revealClassName: `scroll-reveal${visible ? " is-visible" : ""}`,
+  };
 }
 
 function renderInline(text: string): ReactNode[] {
@@ -519,7 +628,9 @@ function EvidenceBrowser({ items }: { items: Evidence[] }) {
 }
 
 function EvidenceList({ ids, compact = false }: { ids: string[]; compact?: boolean }) {
-  const items = ids.map(getEvidence).filter((item): item is Evidence => Boolean(item));
+  const items = ids
+    .map(getEvidence)
+    .filter((item): item is Evidence => Boolean(item && item.visibility === "public"));
 
   if (!items.length) {
     return <p className="muted">등록된 증빙이 없습니다.</p>;
@@ -565,8 +676,8 @@ function Header({
 }) {
   const links = [
     ["/", "Home"],
-    ["/projects", "Projects"],
-    ["/credentials", "Credentials"],
+    ["/projects", "Work"],
+    ["/credentials", "Proof"],
     ["/contact", "Contact"],
   ] as const;
 
@@ -574,7 +685,7 @@ function Header({
     <header className="site-header">
       <a className="brand" href="#/" aria-label="홈으로 이동">
         <span className="brand-mark">SCW</span>
-        <span>송채우 Portfolio</span>
+        <span>Song Chaewoo</span>
       </a>
       <div className="header-actions">
         <nav className="site-nav" aria-label="주요 탐색">
@@ -617,127 +728,164 @@ function Footer() {
 }
 
 function Hero({ theme }: { theme: Theme }) {
-  const heroImage =
-    theme === "dark" ? "/assets/portfolio-hero-dark.png" : "/assets/portfolio-hero-minimal.png";
+  const leadProject = data.projects
+    .filter((project) => project.status === "verified")
+    .slice()
+    .sort((a, b) => a.priority - b.priority)[0];
 
   return (
     <section className="hero" aria-labelledby="hero-title">
-      <div className="hero-content">
-        <p className="eyebrow">PM, Developer, SW Salesman, problem definer</p>
-        <h1 id="hero-title">{data.profile.name}</h1>
-        <p className="hero-headline">{data.profile.headline}</p>
-        <div className="hero-actions">
-          <a className="button button-primary" href="#/projects">
-            대표 프로젝트와 근거 보기
-          </a>
-          <a className="button button-secondary" href={`mailto:${data.profile.email}`}>
-            이메일로 연락하기
-          </a>
+      <div className="hero-copy">
+        <div className="hero-intro">
+          <p className="eyebrow">PM / Product Builder</p>
+          <p className="hero-name">
+            {data.profile.name} · {data.profile.englishName}
+          </p>
+        </div>
+        <h1 id="hero-title">{data.profile.headline}</h1>
+        <div className="hero-bottom">
+          <p className="hero-headline">{data.profile.shortPitch}</p>
+          <div className="hero-actions">
+            <a className="button button-primary" href="#/projects">
+              대표 프로젝트 보기
+            </a>
+            <a className="text-link" href={`mailto:${data.profile.email}`}>
+              {data.profile.email}
+            </a>
+          </div>
         </div>
       </div>
-      <figure className="hero-visual">
-        <img
-          className="hero-image"
-          src={heroImage}
-          alt={
-            theme === "dark"
-              ? "어두운 배경 위에 라임 포인트가 있는 포트폴리오 인터페이스 모형"
-              : "흰 배경 위에 절제된 포트폴리오 인터페이스 모형이 떠 있는 미니멀 비주얼"
-          }
-        />
-      </figure>
+      {leadProject && (
+        <a className="hero-art" href={`#/projects/${leadProject.slug}`} aria-label={`${leadProject.title} 보기`}>
+          <img
+            src={leadProject.cover.src}
+            alt={leadProject.cover.alt}
+            style={{ objectPosition: projectCoverPosition(leadProject) }}
+          />
+          <span>
+            {theme === "dark" ? "Featured case · Dark edition" : "Featured case · 01"} · {projectCoverLabel(leadProject)}
+          </span>
+        </a>
+      )}
     </section>
   );
 }
 
-function ProjectMiniCard({ project }: { project: Project }) {
+function SelectedWorkCard({
+  project,
+  index,
+  reverse = false,
+}: {
+  project: Project;
+  index: number;
+  reverse?: boolean;
+}) {
   const status = getStatus(project.status);
+  const reveal = useScrollReveal<HTMLAnchorElement>();
 
   return (
-    <a className="mini-card" href={`#/projects/${project.slug}`}>
-      <span>{project.period}</span>
-      <strong>{project.title}</strong>
-      <small>{status.label}</small>
+    <a
+      ref={reveal.ref}
+      className={`selected-work-card${reverse ? " selected-work-card-reverse" : ""} ${reveal.revealClassName}`}
+      href={`#/projects/${project.slug}`}
+      aria-label={`${project.title} 케이스 스터디 보기`}
+      style={revealDelayStyle(index * 90)}
+    >
+      <figure className="selected-work-image">
+        <img
+          src={project.cover.src}
+          alt={project.cover.alt}
+          loading={index === 0 ? "eager" : "lazy"}
+          style={{ objectPosition: projectCoverPosition(project) }}
+        />
+        <figcaption>{projectCoverLabel(project)}</figcaption>
+      </figure>
+      <div className="selected-work-copy">
+        <div className="editorial-meta">
+          <span>{String(index + 1).padStart(2, "0")}</span>
+          <span>{project.period}</span>
+          <span>{status.label}</span>
+        </div>
+        <h3>{project.title}</h3>
+        <p>{projectHeadlineImpact(project)}</p>
+        <dl>
+          <div>
+            <dt>Role</dt>
+            <dd>{project.contribution.level}</dd>
+          </div>
+          <div>
+            <dt>{projectResultLabel(project)}</dt>
+            <dd>{projectCardResult(project)}</dd>
+          </div>
+        </dl>
+        <span className="text-link">케이스 스터디 보기</span>
+      </div>
     </a>
   );
 }
 
 function SignalBoard() {
   const featured = data.projects
+    .filter((project) => project.status === "verified")
     .slice()
     .sort((a, b) => a.priority - b.priority)
     .slice(0, 3);
+  const [leadProject, ...supportingProjects] = featured;
 
   return (
     <section className="section signal-section" aria-labelledby="signal-title">
-      <div className="section-heading">
-        <p className="eyebrow">30초 안에 보여줄 신호</p>
-        <h2 id="signal-title">고객 문제를 제품 흐름으로 바꾸는 사람</h2>
-        <p>{data.profile.shortPitch}</p>
+      <div className="section-heading section-heading-editorial">
+        <p className="eyebrow">Selected Work · 2026</p>
+        <h2 id="signal-title">현장에서 찾고,<br />제품으로 연결합니다.</h2>
       </div>
-      <div className="featured-strip">
-        {featured.map((project) => (
-          <ProjectMiniCard key={project.slug} project={project} />
+      <div className="selected-works">
+        {[leadProject, ...supportingProjects].filter(Boolean).map((project, index) => (
+          <SelectedWorkCard index={index} key={project.slug} project={project} reverse={index % 2 === 1} />
         ))}
       </div>
-      <div className="bento-grid">
-        <article className="bento-card bento-card-large accent-lime">
-          <span className="metric">4.24</span>
-          <h3>학업 지속성</h3>
-          <p>가천대학교 인공지능학과, 전체 GPA 4.24와 직전학기 4.5. 국가우수장학금 이공계 수혜.</p>
-        </article>
-        <article className="bento-card accent-coral">
-          <span className="metric">PM</span>
-          <h3>문제 정의</h3>
-          <p>사용자 관찰과 회고 자료를 기반으로 문제, 가치, 실행 범위를 분리합니다.</p>
-        </article>
-        <article className="bento-card accent-cobalt">
-          <span className="metric">API</span>
-          <h3>실행 연결</h3>
-          <p>React, FastAPI, Supabase, LLM API, 자동화 스크립트를 제품 흐름으로 묶습니다.</p>
-        </article>
-        <article className="bento-card accent-mint">
-          <span className="metric">Trust</span>
-          <h3>근거 기반 문장</h3>
-          <p>확인된 내용과 확인 필요한 기여를 나눠 과장 없는 포트폴리오 문장을 만듭니다.</p>
-        </article>
+      <div className="proof-strip" aria-label="핵심 근거">
+        <div><strong>4.24</strong><span>GPA</span></div>
+        <div><strong>9h</strong><span>현장 인터뷰</span></div>
+        <div><strong>24 → 8</strong><span>신청 · 파일럿 신호</span></div>
+        <div><strong>100 → 28</strong><span>DM · 응답</span></div>
       </div>
     </section>
   );
 }
 
 function CapabilityMatrix() {
+  const capabilities = [
+    {
+      number: "01",
+      title: "Discover",
+      body: "현장 인터뷰와 고객 반응에서 문제 신호를 찾고, 약한 가설은 빠르게 버립니다.",
+    },
+    {
+      number: "02",
+      title: "Frame",
+      body: "문제, 사용자 맥락, 제품 가치와 다음 실험을 설득 가능한 언어로 정리합니다.",
+    },
+    {
+      number: "03",
+      title: "Build",
+      body: "React, API, AI 자동화를 연결해 실제로 작동하는 프로토타입과 운영 흐름을 만듭니다.",
+    },
+  ];
+
   return (
     <section className="section section-contrast" aria-labelledby="capability-title">
-      <div className="section-heading">
-        <p className="eyebrow">Capability Matrix</p>
-        <h2 id="capability-title">정성 역량과 기술 실행을 같이 보여줍니다</h2>
+      <div className="section-heading section-heading-editorial">
+        <p className="eyebrow">How I Work</p>
+        <h2 id="capability-title">문제에서<br />작동하는 흐름까지.</h2>
       </div>
-      <div className="matrix">
-        <div className="matrix-column">
-          <h3>Discovery & Narrative</h3>
-          <ul>
-            <li>고객 인터뷰와 회고에서 문제 신호 추출</li>
-            <li>문제, 사용자 맥락, 세일즈 메시지를 분리</li>
-            <li>지원서에 바로 쓸 수 있는 근거 기반 문장화</li>
-          </ul>
-        </div>
-        <div className="matrix-column">
-          <h3>Build & Integrate</h3>
-          <ul>
-            <li>React/Vite, Next.js, Tailwind, CSS Module 화면 구현</li>
-            <li>FastAPI, Supabase, Google OAuth, CLI 백엔드 흐름</li>
-            <li>Claude, EXA, Telegram, GCS API 기반 자동화</li>
-          </ul>
-        </div>
-        <div className="matrix-column">
-          <h3>Operate & Verify</h3>
-          <ul>
-            <li>PR, issue, branch, README, 배포 문서 기반 협업</li>
-            <li>피드백 점수, retry, rollback이 있는 자동화 루프</li>
-            <li>민감정보와 미확인 기여를 분리하는 공개 원칙</li>
-          </ul>
-        </div>
+      <div className="capability-editorial">
+        {capabilities.map((item) => (
+          <article key={item.number}>
+            <span>{item.number}</span>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
+        ))}
       </div>
     </section>
   );
@@ -746,37 +894,33 @@ function CapabilityMatrix() {
 function Timeline() {
   return (
     <section className="section" aria-labelledby="timeline-title">
-      <div className="section-heading">
-        <p className="eyebrow">About</p>
-        <h2 id="timeline-title">배경과 기본 정보</h2>
-      </div>
-      <div className="profile-grid">
-        <article className="profile-panel">
-          <h3>Education</h3>
-          <p>
-            <strong>{data.profile.education.school}</strong> {data.profile.education.major}
-          </p>
-          <p>{data.profile.education.gpa}</p>
-          <p>{data.profile.education.scholarship}</p>
-        </article>
-        <article className="profile-panel">
-          <h3>Experience</h3>
-          {data.profile.experience.map((item) => (
-            <div className="timeline-item" key={`${item.period}-${item.title}`}>
-              <span>{item.period}</span>
-              <strong>{item.title}</strong>
-              <p>{item.description}</p>
+      <div className="about-editorial">
+        <div>
+          <p className="eyebrow">About</p>
+          <h2 id="timeline-title">증거를 따라<br />움직이는 빌더.</h2>
+        </div>
+        <div className="about-editorial-body">
+          <p className="about-lead">{data.profile.shortPitch}</p>
+          <dl>
+            <div>
+              <dt>Education</dt>
+              <dd>{data.profile.education.school} · {data.profile.education.major}</dd>
             </div>
-          ))}
-        </article>
-        <article className="profile-panel">
-          <h3>Strengths</h3>
-          <ul className="clean-list">
-            {data.profile.strengths.map((item) => (
-              <li key={item}>{item}</li>
+            <div>
+              <dt>Academic</dt>
+              <dd>{data.profile.education.gpa} · {data.profile.education.scholarship}</dd>
+            </div>
+          </dl>
+          <div className="about-experience">
+            {data.profile.experience.map((item) => (
+              <article key={`${item.period}-${item.title}`}>
+                <span>{item.period}</span>
+                <h3>{item.title}</h3>
+                <p>{item.description}</p>
+              </article>
             ))}
-          </ul>
-        </article>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -794,24 +938,56 @@ function HomePage({ theme }: { theme: Theme }) {
   );
 }
 
-function ProjectCard({ project }: { project: Project }) {
+function ProjectCard({
+  project,
+  featured = false,
+  index = 0,
+  reverse = false,
+}: {
+  project: Project;
+  featured?: boolean;
+  index?: number;
+  reverse?: boolean;
+}) {
   const status = getStatus(project.status);
+  const reveal = useScrollReveal<HTMLAnchorElement>();
 
   return (
     <a
-      className="project-card"
+      ref={reveal.ref}
+      className={`project-card${featured ? " project-card-featured" : ""}${reverse ? " project-card-reverse" : ""} ${reveal.revealClassName}`}
       href={`#/projects/${project.slug}`}
       aria-label={`${project.title} 문제와 근거 보기`}
+      style={revealDelayStyle((index % 4) * 70)}
     >
-      <div className="project-card-top">
-        <span className="period">{project.period}</span>
-        <span className={`status-badge status-${project.status}`}>{status.label}</span>
+      <figure className="project-cover">
+        <img
+          src={project.cover.src}
+          alt={project.cover.alt}
+          loading="lazy"
+          style={{ objectPosition: projectCoverPosition(project) }}
+        />
+        <figcaption>{projectCoverLabel(project)}</figcaption>
+      </figure>
+      <div className="project-card-copy">
+        <div className="project-card-top">
+          <span className="period">{project.period}</span>
+          <span>{status.label}</span>
+        </div>
+        <h3>{project.title}</h3>
+        <p>{projectHeadlineImpact(project)}</p>
+        <dl className="project-card-summary">
+          <div>
+            <dt>Role</dt>
+            <dd>{project.contribution.level}</dd>
+          </div>
+          <div>
+            <dt>{projectResultLabel(project)}</dt>
+            <dd>{projectCardResult(project)}</dd>
+          </div>
+        </dl>
+        <span className="text-link">프로젝트 보기</span>
       </div>
-      <h3>{project.title}</h3>
-      <p className="project-subtitle">{project.subtitle}</p>
-      <p>{project.summary}</p>
-      <TagList tags={project.tags} />
-      <span className="text-link">문제·근거 보기</span>
     </a>
   );
 }
@@ -826,8 +1002,14 @@ function ProjectsPage({
   const projects = useMemo(() => {
     const sorted = data.projects.slice().sort((a, b) => a.priority - b.priority);
     if (selectedFilter === "전체") return sorted;
-    return sorted.filter((project) => project.tags.includes(selectedFilter));
+    return sorted.filter((project) => matchesProjectFilter(project, selectedFilter));
   }, [selectedFilter]);
+  const coreProjects = selectedFilter === "전체"
+    ? projects.filter((project) => project.status === "verified" && project.priority <= 4)
+    : [];
+  const additionalProjects = selectedFilter === "전체"
+    ? projects.filter((project) => !coreProjects.includes(project))
+    : projects;
 
   return (
     <>
@@ -851,11 +1033,38 @@ function ProjectsPage({
             </button>
           ))}
         </div>
-        <div className="project-grid">
-          {projects.map((project) => (
-            <ProjectCard key={project.slug} project={project} />
-          ))}
-        </div>
+        {selectedFilter === "전체" ? (
+          <div className="project-stack">
+            <div>
+              <div className="projects-section-heading">
+                <p className="eyebrow">Core Case Studies</p>
+                <h2>검증된 대표 사례 4개</h2>
+              </div>
+              <div className="project-grid">
+                {coreProjects.map((project, index) => (
+                  <ProjectCard featured index={index} key={project.slug} project={project} reverse={index % 2 === 1} />
+                ))}
+              </div>
+            </div>
+            <div>
+              <div className="projects-section-heading">
+                <p className="eyebrow">Additional Evidence</p>
+                <h2>보조 사례와 확인 필요 기록</h2>
+              </div>
+              <div className="project-grid">
+                {additionalProjects.map((project, index) => (
+                  <ProjectCard index={index} key={project.slug} project={project} />
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="project-grid">
+            {additionalProjects.map((project, index) => (
+              <ProjectCard index={index} key={project.slug} project={project} reverse={index % 2 === 1} />
+            ))}
+          </div>
+        )}
       </section>
     </>
   );
@@ -870,8 +1079,10 @@ function DetailSection({
   title: string;
   children: ReactNode;
 }) {
+  const reveal = useScrollReveal<HTMLElement>();
+
   return (
-    <section id={id} className="detail-section">
+    <section id={id} ref={reveal.ref} className={`detail-section ${reveal.revealClassName}`}>
       <h2>{title}</h2>
       {children}
     </section>
@@ -895,9 +1106,10 @@ function DetailList({ items }: { items?: string[] }) {
 function RoiBoard({ project }: { project: Project }) {
   const inputMetrics = project.roiMetrics.filter((metric) => metric.kind === "input");
   const outputMetrics = project.roiMetrics.filter((metric) => metric.kind !== "input");
+  const reveal = useScrollReveal<HTMLElement>();
 
   return (
-    <section id="roi" className="roi-section" aria-labelledby="roi-title">
+    <section id="roi" ref={reveal.ref} className={`roi-section ${reveal.revealClassName}`} aria-labelledby="roi-title">
       <div className="detail-section-heading">
         <div>
           <p className="eyebrow">Efficiency & ROI</p>
@@ -1001,7 +1213,15 @@ function ContributionBoard({ project, status }: { project: Project; status: Stat
   );
 }
 
-function DeepDiveSection({ project }: { project: Project }) {
+function DeepDiveSection({
+  project,
+  open,
+  onToggle,
+}: {
+  project: Project;
+  open: boolean;
+  onToggle: () => void;
+}) {
   const story = [
     {
       step: "01",
@@ -1011,14 +1231,14 @@ function DeepDiveSection({ project }: { project: Project }) {
     },
     {
       step: "02",
-      label: "Qualitative Effort",
-      title: "정성적 노력",
+      label: "Evidence",
+      title: "근거 수집",
       description: project.customerContext,
     },
     {
       step: "03",
-      label: "Solution",
-      title: "해결 방식",
+      label: "Experiment",
+      title: "실험과 실행",
       description: project.planningNarrative,
     },
     {
@@ -1030,38 +1250,51 @@ function DeepDiveSection({ project }: { project: Project }) {
   ];
 
   return (
-    <DetailSection id="deep-dive" title="Deep Dive & Qualitative Highlight">
-      <div className="story-flow">
-        {story.map((item) => (
-          <article className="story-step" key={item.step}>
-            <div className="story-index">{item.step}</div>
-            <div>
-              <span>{item.label}</span>
-              <h3>{item.title}</h3>
-              <p>{item.description}</p>
+    <section id="deep-dive" className="detail-deep-dive">
+      <button type="button" aria-expanded={open} onClick={onToggle}>
+        <span>
+          <small>Case Deep Dive</small>
+          <strong>문제 · 근거 · 실험 · 결과</strong>
+        </span>
+        <b>{open ? "닫기" : "펼쳐서 흐름 보기"}</b>
+      </button>
+      {open && (
+        <div className="detail-deep-dive-content">
+          <DetailSection title="Problem → Experiment → Result">
+            <div className="story-flow">
+              {story.map((item) => (
+                <article className="story-step" key={item.step}>
+                  <div className="story-index">{item.step}</div>
+                  <div>
+                    <span>{item.label}</span>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
+                </article>
+              ))}
             </div>
-          </article>
-        ))}
-      </div>
-      <div className="highlight-board">
-        {project.qualitativeHighlights.map((highlight) => {
-          const [label, ...body] = highlight.split(":");
-          const hasLabel = body.length > 0;
-          return (
-            <article key={highlight}>
-              <span>{hasLabel ? label : "Highlight"}</span>
-              <p>{hasLabel ? body.join(":").trim() : highlight}</p>
-            </article>
-          );
-        })}
-      </div>
-    </DetailSection>
+            <div className="highlight-board">
+              {project.qualitativeHighlights.map((highlight) => {
+                const [label, ...body] = highlight.split(":");
+                const hasLabel = body.length > 0;
+                return (
+                  <article key={highlight}>
+                    <span>{hasLabel ? label : "Highlight"}</span>
+                    <p>{hasLabel ? body.join(":").trim() : highlight}</p>
+                  </article>
+                );
+              })}
+            </div>
+          </DetailSection>
+        </div>
+      )}
+    </section>
   );
 }
 
 function Retrospective({ project }: { project: Project }) {
   return (
-    <DetailSection id="retrospective" title="Retrospective">
+    <DetailSection id="retrospective" title="Learning & Next">
       <div className="retrospective-grid">
         <article>
           <span>Learned</span>
@@ -1084,7 +1317,7 @@ function ProjectMediaGallery({ media }: { media?: Project["media"] }) {
   }
 
   return (
-    <DetailSection title="Project Images">
+    <DetailSection id="artifacts" title="Actual Artifacts">
       <div className="media-grid">
         {media.map((item) => (
           <figure className="media-card" key={item.src}>
@@ -1097,24 +1330,47 @@ function ProjectMediaGallery({ media }: { media?: Project["media"] }) {
   );
 }
 
-function DetailNav() {
-  const links = [
-    ["roi", "ROI"],
-    ["role", "기여도"],
-    ["deep-dive", "Deep Dive"],
-    ["execution", "실행"],
-    ["retrospective", "회고"],
-    ["evidence", "근거"],
-  ] as const;
+function DetailNav({
+  project,
+  onDeepDiveRequest,
+  onAppendixRequest,
+}: {
+  project: Project;
+  onDeepDiveRequest: () => void;
+  onAppendixRequest: () => void;
+}) {
+  const [activeSection, setActiveSection] = useState("overview");
+  const links: Array<readonly [string, string]> = [
+    ["overview", "Overview"],
+    ["deep-dive", "Case"],
+    ...(project.media?.length ? ([["artifacts", "Artifacts"]] as const) : []),
+    ["retrospective", "Learning"],
+    ["appendix", "Appendix"],
+  ];
 
   function scrollToSection(id: string) {
+    setActiveSection(id);
+    if (id === "deep-dive") {
+      onDeepDiveRequest();
+      return;
+    }
+    if (id === "appendix") {
+      onAppendixRequest();
+      return;
+    }
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   return (
     <nav className="detail-nav" aria-label="프로젝트 상세 섹션">
       {links.map(([id, label]) => (
-        <button key={id} type="button" onClick={() => scrollToSection(id)}>
+        <button
+          className={activeSection === id ? "active" : ""}
+          key={id}
+          type="button"
+          aria-current={activeSection === id ? "location" : undefined}
+          onClick={() => scrollToSection(id)}
+        >
           {label}
         </button>
       ))}
@@ -1122,43 +1378,71 @@ function DetailNav() {
   );
 }
 
-function ProjectDetailPage({ slug }: { slug: string }) {
-  const project = data.projects.find((item) => item.slug === slug);
+function CaseStudyBrief({ project, status }: { project: Project; status: StatusLabel }) {
+  const outcome = projectPrimaryOutcome(project);
+  const evidenceCount = projectEvidenceCount(project);
+  const evidenceTypes = projectEvidenceTypeSummary(project);
 
-  if (!project) {
-    return <NotFoundPage />;
-  }
-
-  const status = getStatus(project.status);
+  const briefItems = [
+    {
+      id: "problem",
+      label: "Problem",
+      title: project.cardProblem || project.problem,
+    },
+    {
+      id: "role",
+      label: "Role",
+      title: project.contribution.level,
+    },
+    {
+      id: "result",
+      label: projectResultLabel(project),
+      title: projectCardResult(project) || outcome?.value || "상세 확인",
+    },
+    {
+      id: "evidence",
+      label: "Evidence",
+      title: `${evidenceCount}개 · ${evidenceTypes}`,
+    },
+  ];
 
   return (
-    <article className="detail-page">
-      <a className="back-link" href="#/projects">
-        프로젝트 목록으로 돌아가기
-      </a>
-      <header className="detail-hero">
-        <div className="detail-hero-copy">
-          <p className="eyebrow">
-            {project.period} · {status.label}
-          </p>
-          <h1>{project.title}</h1>
-          <p className="detail-subtitle">{project.subtitle}</p>
-          <p className="detail-summary">{project.summary}</p>
-          <TagList tags={project.tags} />
-        </div>
-        <aside className="detail-status">
-          <span>My Contribution</span>
-          <strong>{project.contribution.level}</strong>
-          <p>{project.contribution.ownership}</p>
-          <span className={`status-badge status-${project.status}`}>{status.label}</span>
-        </aside>
-      </header>
-      <RoiBoard project={project} />
-      <div className="detail-layout">
-        <DetailNav />
-        <div className="detail-content">
+    <section id="overview" className="case-brief-grid" aria-label={`${project.title} 케이스 스터디 요약`}>
+      {briefItems.map((item) => (
+        <article className="case-brief-card" key={item.id}>
+          <span>{item.label}</span>
+          <h2>{item.title}</h2>
+        </article>
+      ))}
+      <p className="case-brief-note">{status.description}</p>
+    </section>
+  );
+}
+
+function DetailAppendix({
+  project,
+  status,
+  open,
+  onToggle,
+}: {
+  project: Project;
+  status: StatusLabel;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <section id="appendix" className="detail-appendix">
+      <button type="button" aria-expanded={open} onClick={onToggle}>
+        <span>
+          <small>Appendix</small>
+          <strong>기여도 · 세부 지표 · 기술 결정 · 원본 근거</strong>
+        </span>
+        <b>{open ? "닫기" : "펼쳐서 실제 자료 확인"}</b>
+      </button>
+      {open && (
+        <div className="detail-appendix-content">
           <ContributionBoard project={project} status={status} />
-          <DeepDiveSection project={project} />
+          <RoiBoard project={project} />
           <DetailSection id="execution" title="Execution & Technical Decisions">
             <div className="execution-grid">
               <div>
@@ -1175,11 +1459,100 @@ function ProjectDetailPage({ slug }: { slug: string }) {
               <TagList tags={project.technicalHighlights} strong />
             </div>
           </DetailSection>
-          <ProjectMediaGallery media={project.media} />
-          <Retrospective project={project} />
           <DetailSection id="evidence" title="근거 자료">
             <EvidenceList ids={project.evidenceIds} />
           </DetailSection>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function ProjectDetailPage({ slug }: { slug: string }) {
+  const [deepDiveOpen, setDeepDiveOpen] = useState(false);
+  const [appendixOpen, setAppendixOpen] = useState(false);
+  const project = data.projects.find((item) => item.slug === slug);
+
+  if (!project) {
+    return <NotFoundPage />;
+  }
+
+  const status = getStatus(project.status);
+
+  function scrollToDetailSection(id: string) {
+    window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    }, 50);
+  }
+
+  function openAppendix() {
+    setAppendixOpen(true);
+    scrollToDetailSection("appendix");
+  }
+
+  function openEvidence() {
+    setAppendixOpen(true);
+    scrollToDetailSection("evidence");
+  }
+
+  function openDeepDive() {
+    setDeepDiveOpen(true);
+    scrollToDetailSection("deep-dive");
+  }
+
+  function toggleDeepDive() {
+    if (deepDiveOpen) {
+      setDeepDiveOpen(false);
+      return;
+    }
+    openDeepDive();
+  }
+
+  return (
+    <article className="detail-page">
+      <a className="back-link" href="#/projects">
+        프로젝트 목록으로 돌아가기
+      </a>
+      <header className="detail-hero">
+        <div className="detail-hero-copy">
+          <p className="eyebrow">
+            {project.period} · {status.label}
+          </p>
+          <h1>{project.title}</h1>
+          <p className="detail-summary">{projectHeadlineImpact(project)}</p>
+        </div>
+      </header>
+      <figure className="detail-cover">
+        <img src={project.cover.src} alt={project.cover.alt} style={{ objectPosition: projectCoverPosition(project) }} />
+        <figcaption>
+          <span>{project.subtitle}</span>
+          <strong>{projectCoverLabel(project)}</strong>
+        </figcaption>
+      </figure>
+      <CaseStudyBrief project={project} status={status} />
+      <div className="detail-evidence-cta">
+        <div>
+          <p className="eyebrow">Actual Evidence</p>
+          <strong>{projectEvidenceCount(project)}개 공개 근거 · {projectEvidenceTypeSummary(project)}</strong>
+        </div>
+        <button type="button" onClick={openEvidence}>
+          실제 자료 확인하기
+        </button>
+      </div>
+      <div className="detail-layout">
+        <DetailNav project={project} onDeepDiveRequest={openDeepDive} onAppendixRequest={openAppendix} />
+        <div className="detail-content">
+          <DeepDiveSection project={project} open={deepDiveOpen} onToggle={toggleDeepDive} />
+          <ProjectMediaGallery media={project.media} />
+          <Retrospective project={project} />
+          <DetailAppendix
+            open={appendixOpen}
+            project={project}
+            status={status}
+            onToggle={() => setAppendixOpen((current) => !current)}
+          />
         </div>
       </div>
     </article>
@@ -1250,7 +1623,7 @@ function ContactPage() {
                 <a href="#/projects">대표 프로젝트와 근거</a>
               </li>
               <li>
-                <a href="#/projects/windmill">WindMill 상세 사례</a>
+                <a href="#/projects/gcs-hutzpa-construction-billing">공사 기성청구 고객 검증 상세 사례</a>
               </li>
               <li>
                 <a href="#/credentials">자격증 증빙</a>
@@ -1311,7 +1684,7 @@ export default function App() {
   useEffect(() => {
     function handleHashChange() {
       setRoute(getCurrentRoute());
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     window.addEventListener("hashchange", handleHashChange);
@@ -1319,7 +1692,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    document.title = route.startsWith("/projects/") ? "프로젝트 상세 · 송채우 Portfolio" : "송채우 Portfolio";
+    document.title = route.startsWith("/projects/")
+      ? "프로젝트 상세 · 송채우 PM/Product Builder"
+      : "송채우 · PM/Product Builder";
   }, [route]);
 
   useEffect(() => {
