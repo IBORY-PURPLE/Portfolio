@@ -3795,7 +3795,12 @@ body {
   }
 
   .case-brief-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
+  }
+
+  .case-brief-card {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
   }
 
   .case-brief-card:nth-child(2) {
@@ -3804,6 +3809,10 @@ body {
 
   .case-brief-card:nth-child(-n + 2) {
     border-bottom: 1px solid var(--line);
+  }
+
+  .case-brief-card:nth-child(4) {
+    border-bottom: 0;
   }
 
   .detail-layout {

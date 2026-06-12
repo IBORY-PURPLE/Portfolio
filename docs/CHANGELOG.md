@@ -6,6 +6,8 @@
 
 | Version | Commit | Use when | Safe rollback |
 | --- | --- | --- | --- |
+| 0.8.0 | `pending` | Footstep verified contribution, safer evidence-backed covers, mobile detail readability | Keep local diff or commit, then replace `pending` with the commit SHA |
+| 0.7.2 | `bcf9748d5989bbc651f13694939e8340ca5b88ea` | Vercel Git integration auto deployment with GitHub Actions validation | Disconnect the Vercel Git repository and restore the token-based workflow only if custom CI deployment is required |
 | 0.7.1 | `pending` | WindMill actual product-interface cover | Keep local diff or commit, then replace `pending` with the commit SHA |
 | 0.7.0 | `pending` | Representative project rank 1-4, AgenticLinkedIn/고립된 바다 분리, Deep Dive accordion | Keep local diff or commit, then replace `pending` with the commit SHA |
 | 0.6.0 | `pending` | Baseframe-inspired editorial redesign, contextual project cover images, image-first home/index/detail | Keep local diff or commit, then replace `pending` with the commit SHA |
@@ -15,6 +17,97 @@
 | 0.2.0 | `7dd3b42` 이후 자료 확장 기준 | Drive 자료 기반 프로젝트 확장과 초기 포트폴리오 구조 확인용 | 이후 커밋을 선택적으로 `git revert` |
 
 > 특정 시점의 파일 상태를 보기만 하려면 `git switch --detach <commit>`을 사용할 수 있습니다. 작업을 되돌릴 때는 기존 기록을 보존하는 `git revert <commit>`을 우선 사용하세요.
+
+## [0.8.0] - 2026-06-12
+
+Git commit: `pending`
+
+### Summary
+
+- 사용자 확인과 공개 GitHub 기록을 바탕으로 Footstep을 확인 필요 사례에서 검증된 React 프론트엔드 협업 사례로 전환했습니다.
+- 프로젝트 필터와 모바일 상세 요약 레이아웃을 다듬고, 새 커버 이미지를 근거 안전성과 로딩 성능 기준으로 재검토했습니다.
+
+### Agent Feedback Incorporated
+
+- Toss recruiter reviewer:
+  - P1: AgenticLinkedIn 생성형 커버의 `98.2%`, `156 tasks`, `24 teams`는 공개 근거로 확인되지 않은 성과처럼 보일 수 있습니다. Acceptance: 실제 발표자료 표지를 사용하고 `Presentation evidence`로 표시했습니다.
+  - P1: Footstep의 검증 상태 상향은 본인 계정 확인 범위를 넘지 않아야 합니다. Acceptance: `IBORY-PURPLE` 공개 기록에서 확인되는 Footer, ProfileSetting/API, 댓글 UI만 주장하고 `CHAEWOOSONG`, Figma, Notion 범위는 확인 필요로 유지했습니다.
+- UI/UX lead reviewer:
+  - P1: 새로 참조되는 WebP 커버 4장의 합계가 약 7.4MB로 첫 화면과 프로젝트 목록 로딩에 부담을 줍니다. Acceptance: 참조 커버를 WebP 재압축하거나 기존 최적화본으로 복원해 합계를 약 357KB로 줄였습니다.
+  - P1: 모바일 상세 상단의 2열 Brief 카드가 좁고 읽기 어렵습니다. Acceptance: 모바일에서는 1열로 쌓이고 마지막 카드 하단선이 중복되지 않습니다.
+
+### Added
+
+- `ProjectCover.kind`에 실제 발표자료 기반 커버를 구분하는 `evidence` 유형과 `Presentation evidence` 라벨을 추가했습니다.
+
+### Changed
+
+- Footstep을 `verified` 보조 사례로 이동하고 공개 GitHub 기록에서 확인된 구현·협업 범위로 서술을 갱신했습니다.
+- `보조 사례` 필터가 Growth 태그만이 아니라 우선순위 5 이후의 모든 Additional Evidence를 보여주도록 변경했습니다.
+- AgenticLinkedIn 커버를 확인되지 않은 수치가 포함된 생성형 대시보드에서 실제 발표자료 표지로 교체했습니다.
+- Footstep, AgenticLinkedIn, Daily Snippet 커버를 WebP로 재압축하고, 1인 창작자 커버는 개인정보처럼 보이는 숫자 문자열이 없는 기존 최적화본을 유지했습니다.
+
+### Verification
+
+- `npm run check`: passed (`tsc --noEmit`).
+- `npm run lint`: passed (`eslint .`).
+- `npm run build`: passed; generated `dist/index.html` 1.60 kB (gzip 0.86 kB), CSS 69.85 kB (gzip 12.34 kB), and JS 746.54 kB (gzip 137.09 kB).
+- `npm audit --audit-level=high`: passed with `found 0 vulnerabilities`.
+- `.\scripts\sync-evidence-assets.ps1 -VerifyOnly`: passed; all evidence assets were present.
+- `git diff --check`: passed with CRLF conversion warnings only.
+- Referenced project-cover total: 356,844 bytes; optimized WebP covers visually inspected successfully.
+- Toss recruiter final re-review: no remaining P0/P1 after replacing unsupported AgenticLinkedIn visual metrics and keeping Footstep verification within the confirmed `IBORY-PURPLE` contribution scope.
+- UI/UX lead final re-review: no remaining P0/P1 after cover optimization and the mobile Brief grid change.
+- Local browser QA was interrupted before the preview server persisted; GitHub Actions, Vercel Production deployment, and production browser QA will be confirmed after push.
+
+### Residual Risks
+
+- Footstep 외부 사용자 반응과 배포 성과는 확인 근거가 없어 주장하지 않습니다.
+- Footstep의 `CHAEWOOSONG`, Figma frame, Notion 문서 담당 범위는 추가 확인이 필요합니다.
+- 참조되지 않는 로컬 커버 백업 파일 3개와 QA 임시 폴더는 정확한 경로를 `.gitignore`에 추가해 이번 커밋에서 제외합니다.
+
+## [0.7.2] - 2026-06-12
+
+Git commit: `bcf9748d5989bbc651f13694939e8340ca5b88ea`
+
+### Summary
+
+- Vercel 프로젝트를 `IBORY-PURPLE/Portfolio` GitHub 저장소에 직접 연결해 `main` 푸시가 토큰 없이 Production 배포를 자동 생성하도록 변경했습니다.
+- GitHub Actions는 배포 토큰을 사용하는 대신 pull request와 `main` 푸시에서 품질 검증만 수행하도록 정리했습니다.
+
+### Agent Feedback Incorporated
+
+- 배포 운영 검토:
+  - P1: 만료되거나 잘못 저장된 `VERCEL_TOKEN` 하나가 자동 배포 전체를 중단시키고 있었습니다. Acceptance: Vercel Git integration을 연결하고 Actions에서 토큰 기반 배포 단계를 제거했습니다.
+  - P1: 기존 Actions는 Production 배포만 검증해 pull request 단계에서 회귀를 잡지 못했습니다. Acceptance: `main` 대상 pull request에서도 동일한 린트, 타입 검사, 보안 감사, 빌드를 실행합니다.
+
+### Added
+
+- Vercel 프로젝트의 Connected Git Repository에 `IBORY-PURPLE/Portfolio`를 연결했습니다.
+- `vercel-production.yml`에 `pull_request` 검증 트리거를 추가했습니다.
+
+### Changed
+
+- GitHub Actions 워크플로 이름을 `Validate portfolio`로 변경했습니다.
+- `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`에 의존하던 Vercel CLI 배포 단계를 제거했습니다.
+- 기존 `vercel-production.yml`은 배포가 아닌 품질 검증 워크플로로 전환했습니다.
+
+### Verification
+
+- `npm run check`: pass (`tsc --noEmit`)
+- `npm run lint`: pass (`eslint .`)
+- `npm audit --audit-level=high`: pass (`found 0 vulnerabilities`)
+- `npm run build`: pass. Output: `dist/index.html` 1.60 kB gzip 0.85 kB, `dist/assets/index-CHXkza4V.css` 69.85 kB gzip 12.34 kB, `dist/assets/index-CiO0ioNw.js` 746.48 kB gzip 137.08 kB.
+- `git diff --check -- .github/workflows/vercel-production.yml docs/CHANGELOG.md`: pass with CRLF conversion warnings only.
+- GitHub Actions `Validate portfolio #3`: pass in 31 seconds for commit `bcf9748`.
+- Vercel Git integration: pass. Commit `bcf9748` created a Production deployment in 12 seconds and reached `Ready`.
+- Production smoke test: pass. `https://portfolio-eight-pied-37.vercel.app/` loaded the portfolio home page after the deployment.
+
+### Residual Risks
+
+- Vercel GitHub App 연결 권한이나 Vercel 프로젝트의 Production Branch 설정이 이후 변경되면 자동 배포가 중단될 수 있습니다.
+- 기존 GitHub 저장소의 `VERCEL_TOKEN` secret과 Vercel 관련 variables는 더 이상 워크플로에서 사용하지 않지만 저장소 설정에 남아 있을 수 있습니다.
+- 로컬 환경의 `.git` 쓰기 권한이 차단되어 커밋은 GitHub 연결을 통해 원격 `main`에 생성했습니다. 로컬 브랜치는 원격 커밋을 아직 가리키지 않습니다.
 
 ## [0.7.1] - 2026-06-11
 

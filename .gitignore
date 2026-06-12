@@ -7,6 +7,10 @@ dist/
 .codex-local-server*
 tmp-*
 tmp-qa-screenshots/
+tmp/
 references/
 docs/Memo.md
 .gstack/
+public/assets/projects/covers/gcs-agentic-linkedin22.webp
+public/assets/projects/covers/gcs-daily-snippet22.webp
+public/assets/projects/covers/gcs11-hutzpa-creator-popups.webp

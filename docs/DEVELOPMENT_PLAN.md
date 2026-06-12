@@ -70,5 +70,6 @@ Evidence 링크는 배포 방문자가 로그인 없이 접근할 수 있는 내
 
 - GitHub, 배포 URL, 이력서 PDF 확정 후 Contact/CTA에 추가
 - 공개 Evidence 사본 추가 시 `scripts/sync-evidence-assets.ps1 -VerifyOnly`와 브라우저 QA 수행
-- WindMill, Footstep의 GitHub 계정/브랜치 본인 확인
+- WindMill의 GitHub 계정/브랜치 본인 확인
+- Footstep의 `CHAEWOOSONG`, Figma frame, Notion 문서 담당 범위 추가 확인
 - Lighthouse 접근성/성능 점검 후 배포

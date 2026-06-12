@@ -28,7 +28,7 @@
 | `windmill-project-summary.pdf` | PDF inline viewer | WindMill 프로젝트 요약 |
 | `windmill-contribution-profile.md` | Markdown viewer | PR/브랜치 기반 기여 후보 |
 | `windmill-readme.md` | Markdown viewer | 검증 문장 규칙 |
-| `footstep-contribution-profile.md` | Markdown viewer | Footstep 기여 후보 |
+| `footstep-contribution-profile.md` | Markdown viewer | IBORY-PURPLE 계정 기반 Footstep 기여 확인 기록 |
 | `footstep-readme.md` | Markdown viewer | 팀 프로젝트 source 설명 |
 | `gcs-*.md`, `gcs-*.pdf` | Markdown/PDF viewer | 공개 가능한 GCS 발표, 회고, 자동화 증빙 |
 | `gcs-pitumi-retro-public-summary.md` | Markdown viewer | 내부 회고 원문을 대체한 익명 외부용 요약 |

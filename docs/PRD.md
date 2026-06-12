@@ -126,9 +126,9 @@ Footstep 상세는 다음 내용을 포함한다.
 - Figma, GitHub, Notion에 흩어진 협업 자료를 제품 개발 흐름으로 재구성한 과정
 - React Router 기반 화면 라우팅
 - CSS Module 기반 화면별 스타일
-- ProfileSetting, Footer, 댓글 UI 등 후보 기여
+- `IBORY-PURPLE` 계정 기록에서 확인된 ProfileSetting/API, Footer, 댓글 UI 기여
 - Figma, GitHub, Notion 협업 흐름
-- 확인되지 않은 담당 범위는 단정하지 않는 안전한 문장 사용
+- `CHAEWOOSONG`, Figma, Notion 등 확인되지 않은 담당 범위는 단정하지 않는 안전한 문장 사용
 
 GCS8기 상세는 다음 내용을 포함한다.
 
@@ -176,7 +176,8 @@ GCS8기 상세는 다음 내용을 포함한다.
 
 ## 10. 확인 필요 항목
 
-- `채우`, `IBORY-PURPLE`, `CHAEWOOSONG`, `chaewoo`가 모두 본인 계정/브랜치인지 확인
+- `IBORY-PURPLE`은 본인 계정으로 확인 완료
+- `채우`, `CHAEWOOSONG`, `chaewoo`가 본인 계정/브랜치인지 추가 확인
 - WindMill에서 백엔드와 AI 서버를 직접 구현했는지, 연동/협업 중심이었는지 확인
 - 고객 인터뷰, 세일즈, 사용자 피드백, 발표 반응으로 직접 말할 수 있는 근거 자료 확인
 - 각 프로젝트의 공식 기간, 팀 규모, 수상/발표/데모 여부 확인

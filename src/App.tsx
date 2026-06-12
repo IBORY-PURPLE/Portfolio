@@ -67,7 +67,6 @@ const FILTER_GROUPS: Record<string, string[]> = {
   "고객검증": ["Research", "Customer"],
   "개발·자동화": ["Frontend", "AI/API", "Backend", "Automation"],
   "협업·발표": ["Collaboration", "Presentation"],
-  "보조 사례": ["Growth"],
 };
 
 function projectHeadlineImpact(project: Project) {
@@ -104,6 +103,7 @@ function projectEvidenceTypeSummary(project: Project) {
 
 function matchesProjectFilter(project: Project, filter: string) {
   if (filter === "전체") return true;
+  if (filter === "보조 사례") return project.priority > 4;
   const tags = FILTER_GROUPS[filter] ?? [filter];
   return tags.some((tag) => project.tags.includes(tag));
 }
@@ -111,6 +111,8 @@ function matchesProjectFilter(project: Project, filter: string) {
 function projectCoverLabel(project: Project) {
   if (project.cover.kind === "concept") return "Concept visual · AI-generated";
   if (project.cover.kind === "product") return "Actual product interface";
+  if (project.cover.kind === "reconstruction") return "Product UI reconstruction · AI-assisted";
+  if (project.cover.kind === "evidence") return "Presentation evidence";
   return "Documentary photo";
 }
 
@@ -1049,7 +1051,7 @@ function ProjectsPage({
             <div>
               <div className="projects-section-heading">
                 <p className="eyebrow">Additional Evidence</p>
-                <h2>보조 사례와 확인 필요 기록</h2>
+                <h2>검증된 보조 사례와 추가 확인 기록</h2>
               </div>
               <div className="project-grid">
                 {additionalProjects.map((project, index) => (

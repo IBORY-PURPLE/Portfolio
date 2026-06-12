@@ -38,7 +38,7 @@ export type ProjectCover = {
   src: string;
   alt: string;
   focalPoint?: string;
-  kind: "concept" | "documentary" | "product";
+  kind: "concept" | "documentary" | "product" | "reconstruction" | "evidence";
 };
 
 export type ProjectMetric = {
@@ -195,7 +195,7 @@ export const portfolioData = {
       title: "WindMill",
       subtitle: "투자 판단 보조와 포트폴리오 추천 흐름을 가진 주식 웹 서비스",
       period: "2025.08",
-      priority: 8,
+      priority: 10,
       status: "strong_but_needs_confirmation",
       tags: ["Planning", "Customer", "Frontend", "AI/API", "Collaboration"],
       summary: "흩어진 주식 정보, 관심/보유 종목 관리, AI 예측 그래프를 한 흐름으로 묶어 사용자가 종목을 찾고 비교하고 판단하도록 돕는 프로젝트입니다.",
@@ -493,8 +493,8 @@ export const portfolioData = {
       summary: "Drive에서 별도 AgenticLinkedIn 폴더, 발표자료, 메인 이미지, 데모 영상이 확인된 AI Native 프로젝트입니다. 선원/고립된 바다 고객검증 사례와 섞이지 않도록 독립 대표 프로젝트로 분리했습니다.",
       cover: {
         src: "/assets/projects/covers/gcs-agentic-linkedin.webp",
-        alt: "AgenticLinkedIn의 AI agent 프로필과 네트워크형 데모 흐름을 표현한 콘셉트 커버",
-        kind: "concept"
+        alt: "AgentLinkedIn 발표자료 표지와 AI agent 네트워크 그래픽",
+        kind: "evidence"
       },
       headlineImpact: "AI agent 컨셉을 LinkedIn형 네트워크·프로필 경험으로 보여주는 독립 데모를 구성",
       cardProblem: "AI agent 데모는 기능만 나열하면 역할과 협업 맥락이 빠르게 이해되지 않음",
@@ -1053,7 +1053,7 @@ export const portfolioData = {
       title: "연극동아리 아름",
       subtitle: "3개월의 집요한 몰입으로 무경험 상태에서 대학로 주연 무대까지",
       period: "2023.02",
-      priority: 10,
+      priority: 11,
       status: "strong_but_needs_confirmation",
       tags: ["Growth", "Collaboration", "Presentation"],
       summary: "연기 경험이 없는 상태에서 3개월 안에 주연 브란트 역을 완성해야 했습니다. 매일 자정까지 팀 연습을 이어가고 샤워 시간 1시간 30분까지 대본 암기에 사용해, 혜화 대학로에서 1박 2일간 총 200명의 관객 앞 공연과 전석 매진을 완수했습니다.",
@@ -1168,65 +1168,65 @@ export const portfolioData = {
       title: "Footstep",
       subtitle: "React 팀 프로젝트와 GitHub 협업 흐름을 재구성한 UMC 프로젝트",
       period: "2022.06",
-      priority: 11,
-      status: "needs_user_confirmation",
+      priority: 8,
+      status: "verified",
       tags: ["Frontend", "Collaboration"],
-      summary: "React Router, CSS Module, Figma, GitHub, Notion 협업 자료를 기반으로 팀 개발 흐름과 후보 기여를 조심스럽게 정리한 프로젝트입니다.",
+      summary: "React Router와 CSS Module을 사용해 Footer, ProfileSetting/API, 댓글 UI를 구현하고 GitHub issue, branch, PR 흐름으로 협업한 UMC 팀 프로젝트입니다.",
       cover: {
         src: "/assets/projects/covers/footstep.webp",
-        alt: "오래된 협업 기록 사이에서 확인 가능한 기여 근거만 라임색 발자국으로 연결한 장면",
-        kind: "concept"
+        alt: "Footstep 기록형 웹 서비스 화면을 노트북 목업으로 재구성한 이미지",
+        kind: "reconstruction"
       },
-      headlineImpact: "오래된 React 팀 프로젝트 기록을 근거 상태별로 다시 분리한 확인 필요 사례",
-      cardProblem: "오래된 협업 기록은 실제 담당 범위와 계정 소유가 흐려질 수 있음",
-      cardAction: "Figma, GitHub, Notion 기록을 역할 후보와 확인 필요 사항으로 재분류",
-      cardResult: "계정 확인 전 단정 표현 없이 보조 사례로만 노출",
+      headlineImpact: "React 프론트엔드 구현 · Footer, ProfileSetting/API, 댓글 UI · GitHub 협업",
+      cardProblem: "기록형 웹 서비스의 프로필 설정, 댓글, 공통 레이아웃 UI를 팀 개발 흐름 안에서 연결해야 함",
+      cardAction: "Footer와 ProfileSetting/API, 댓글 UI를 구현하고 PR·Issue 기반으로 협업",
+      cardResult: "IBORY-PURPLE 계정의 5개 PR·3개 Issue 기록으로 구현·협업 기여 확인",
       resultLabel: "Evidence",
-      productSignal: "역할 과장을 피하고 근거 상태를 투명하게 다루는 공개 원칙 사례입니다.",
-      problem: "오래된 팀 프로젝트는 실제 담당 범위와 계정 소유 확인이 흐려질 수 있어, 포트폴리오 문장으로 쓰려면 과장 없이 근거를 분리해야 합니다.",
-      customerContext: "채용 담당자에게는 초기 팀 협업 경험으로, 기술 면접관에게는 역할 확인 필요 상태를 솔직하게 보여주는 보조 사례입니다.",
-      planningNarrative: "Figma, GitHub, Notion에 흩어진 협업 자료를 제품 개발 흐름으로 다시 읽었습니다.",
-      salesNarrative: "기술 실력의 대표 사례보다는, 팀 프로젝트 안에서 협업 방식과 화면 구현 후보를 설명하는 보조 사례로 배치합니다.",
-      role: "IBORY-PURPLE, CHAEWOOSONG 계정 확인 전까지 Footer, ProfileSetting, CommentList 등 직접 구현을 단정하지 않습니다.",
+      productSignal: "초기 React 팀 프로젝트에서 UI 구현과 GitHub 협업을 함께 경험한 검증된 보조 사례입니다.",
+      problem: "기록형 웹 서비스의 화면 흐름 안에서 프로필 설정, 댓글 상호작용, 공통 Footer 등 여러 UI 컴포넌트를 연결하고 팀 단위로 병합해야 했습니다.",
+      customerContext: "사용자가 프로필을 설정하고 기록에 댓글로 상호작용하는 화면을 중심으로, 팀원이 나눈 컴포넌트를 하나의 React 서비스 흐름으로 연결했습니다.",
+      planningNarrative: "Figma와 Notion은 팀 협업 맥락 자료로 참고하고, 본인 역할은 IBORY-PURPLE GitHub 기록에서 확인되는 구현과 협업 범위로 한정했습니다.",
+      salesNarrative: "대표 성과 사례보다는, 초기 팀 프로젝트에서 맡은 React UI 구현과 PR·Issue 기반 협업 방식을 설명하는 검증된 보조 사례로 배치합니다.",
+      role: "본인 계정으로 확인된 `IBORY-PURPLE` GitHub 기록 기준, Footer UI와 ProfileSetting 화면/API 연결, CommentList·Comments_SideBar 관련 구현에 참여하고 PR·Issue·branch 흐름으로 협업했습니다.",
       roiMetrics: [
         {
-          label: "Input · 자료 재검토",
-          value: "3개 협업 도구",
-          description: "Figma, GitHub, Notion에 흩어진 오래된 프로젝트 기록 확인",
+          label: "Input · 협업 흐름",
+          value: "PR + Issue + Branch",
+          description: "기능 단위 branch와 PR, issue를 사용해 팀 개발 과정에 참여",
           kind: "input"
         },
         {
-          label: "Output · 후보 범위",
-          value: "3개 UI 후보",
-          description: "Footer, ProfileSetting, CommentList의 기여 가능성을 분리",
+          label: "Output · 구현 범위",
+          value: "3개 핵심 UI",
+          description: "Footer, ProfileSetting/API, 댓글 UI 구현 기록 확인",
           kind: "output"
         },
         {
-          label: "Evidence · 신뢰도",
-          value: "단정 표현 0",
-          description: "계정 확인 전 구현 범위를 사실처럼 포장하지 않는 공개 원칙 적용",
+          label: "Evidence · 연결 기록",
+          value: "5 PR · 3 Issue",
+          description: "IBORY-PURPLE 계정과 연결된 공개 GitHub 협업 기록",
           kind: "output"
         }
       ],
       contribution: {
-        level: "기여 범위 확인 중",
-        ownership: "계정·담당 화면 확인 필요",
+        level: "React 프론트엔드 구현·협업",
+        ownership: "IBORY-PURPLE 계정 기여 확인",
         scope: [
-          "React Router 기반 화면 흐름 후보",
-          "Footer, ProfileSetting, Comment UI 후보",
-          "PR·Issue·Branch 협업 기록 재구성"
+          "Footer UI와 ProfileSetting 화면/API 연결",
+          "CommentList·Comments_SideBar 관련 UI 구현",
+          "PR·Issue·Branch 기반 팀 협업"
         ]
       },
       qualitativeHighlights: [
-        "공개 GitHub 기록을 다시 읽고 역할 후보와 확인 필요 사항을 분리",
-        "PR, issue, branch 기반 팀 개발 흐름 파악",
-        "오래된 프로젝트를 안전한 포트폴리오 문장으로 재구성"
+        "ProfileSetting 컴포넌트 구현과 API 연결·수정",
+        "Footer와 댓글 관련 React 컴포넌트 구현",
+        "PR, issue, branch 기반 팀 개발과 병합 흐름 참여"
       ],
       executionScope: [
-        "React Router 기반 화면 라우팅",
-        "CSS Module 기반 화면별 스타일",
-        "Footer, ProfileSetting, Comment UI 후보",
-        "GitHub issue, branch, PR 협업"
+        "React Router 기반 화면 흐름 참여",
+        "CSS Module 기반 Footer·ProfileSetting 스타일",
+        "ProfileSetting API 연결과 댓글 관련 UI 구현",
+        "GitHub issue, branch, PR 기반 협업"
       ],
       technicalHighlights: [
         "React",
@@ -1238,16 +1238,16 @@ export const portfolioData = {
       ],
       architectureNotes: [
         "routes와 components가 분리된 프론트엔드 구조",
-        "ProfileSetting, Footer, CommentList 등 후보 파일 기록 존재"
+        "ProfileSetting, Footer, CommentList 관련 구현 파일 기록 존재"
       ],
       evidenceIds: ["footstep-contribution-profile", "footstep-readme"],
       lessons: [
-        "포트폴리오에서는 오래된 프로젝트일수록 단정 표현을 줄이고 근거 상태를 드러내야 합니다.",
-        "협업 경험은 구현 결과뿐 아니라 PR과 이슈 흐름에서도 설명할 수 있습니다."
+        "React 컴포넌트를 기능 단위로 나누고 PR과 이슈로 연결하면 팀 병합 흐름을 추적하기 쉽습니다.",
+        "초기 팀 프로젝트 경험도 구현 파일과 협업 기록을 함께 보면 역할을 구체적으로 설명할 수 있습니다."
       ],
       improvements: [
-        "GitHub 계정 본인 확인",
-        "실제 담당 화면과 Figma frame 범위 확인"
+        "외부 사용자 반응이나 배포 결과를 확인할 수 있는 근거 추가",
+        "직접 담당한 Figma frame과 Notion 문서 범위 추가 확인"
       ]
     }
   ],
@@ -1451,7 +1451,7 @@ export const portfolioData = {
       url: "/evidence/footstep-contribution-profile.md",
       assetUrl: "/evidence/footstep-contribution-profile.md",
       visibility: "public",
-      note: "계정/역할 확인 전까지 hypothesis로 사용. 배포본에 포함되는 내부 공개 사본."
+      note: "IBORY-PURPLE 계정 확인에 기반한 Footstep 프론트엔드 기여 기록. 배포본에 포함되는 내부 공개 사본."
     },
     {
       id: "footstep-readme",
