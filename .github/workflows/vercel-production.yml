@@ -1,7 +1,10 @@
-name: Validate and deploy to Vercel
+name: Validate portfolio
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
   workflow_dispatch:
@@ -10,16 +13,12 @@ permissions:
   contents: read
 
 concurrency:
-  group: vercel-production
+  group: portfolio-validation-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate-and-deploy:
+  validate:
     runs-on: ubuntu-latest
-    env:
-      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
 
     steps:
       - name: Check out repository
@@ -45,12 +44,3 @@ jobs:
 
       - name: Build application
         run: npm run build
-
-      - name: Pull Vercel production settings
-        run: npx vercel@latest pull --yes --environment=production --token="$VERCEL_TOKEN"
-
-      - name: Build Vercel output
-        run: npx vercel@latest build --prod --token="$VERCEL_TOKEN"
-
-      - name: Deploy to Vercel production
-        run: npx vercel@latest deploy --prebuilt --prod --token="$VERCEL_TOKEN"
