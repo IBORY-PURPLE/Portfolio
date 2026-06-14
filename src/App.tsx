@@ -116,8 +116,17 @@ function projectCoverLabel(project: Project) {
   return "Documentary photo";
 }
 
-function projectCoverPosition(project: Project) {
-  return project.cover.focalPoint || "center";
+function projectCoverStyle(project: Project, surface: "selectedWork" | "index" | "detail") {
+  const placement = project.cover.placements?.[surface];
+  const fit = placement?.fit || "cover";
+  const position = placement?.position || project.cover.focalPoint || "center";
+
+  return {
+    "--cover-fit": fit,
+    "--cover-position": position,
+    "--cover-fit-mobile": placement?.mobileFit || fit,
+    "--cover-position-mobile": placement?.mobilePosition || position,
+  } as CSSProperties;
 }
 
 function TagList({ tags, strong = false }: { tags: string[]; strong?: boolean }) {
@@ -729,12 +738,7 @@ function Footer() {
   );
 }
 
-function Hero({ theme }: { theme: Theme }) {
-  const leadProject = data.projects
-    .filter((project) => project.status === "verified")
-    .slice()
-    .sort((a, b) => a.priority - b.priority)[0];
-
+function Hero() {
   return (
     <section className="hero" aria-labelledby="hero-title">
       <div className="hero-copy">
@@ -757,18 +761,13 @@ function Hero({ theme }: { theme: Theme }) {
           </div>
         </div>
       </div>
-      {leadProject && (
-        <a className="hero-art" href={`#/projects/${leadProject.slug}`} aria-label={`${leadProject.title} 보기`}>
-          <img
-            src={leadProject.cover.src}
-            alt={leadProject.cover.alt}
-            style={{ objectPosition: projectCoverPosition(leadProject) }}
-          />
-          <span>
-            {theme === "dark" ? "Featured case · Dark edition" : "Featured case · 01"} · {projectCoverLabel(leadProject)}
-          </span>
-        </a>
-      )}
+      <figure className="hero-art">
+        <img src={data.profile.heroImage.src} alt={data.profile.heroImage.alt} />
+        <figcaption>
+          <span>How I Build</span>
+          <p>{data.profile.heroImage.caption}</p>
+        </figcaption>
+      </figure>
     </section>
   );
 }
@@ -798,9 +797,8 @@ function SelectedWorkCard({
           src={project.cover.src}
           alt={project.cover.alt}
           loading={index === 0 ? "eager" : "lazy"}
-          style={{ objectPosition: projectCoverPosition(project) }}
+          style={projectCoverStyle(project, "selectedWork")}
         />
-        <figcaption>{projectCoverLabel(project)}</figcaption>
       </figure>
       <div className="selected-work-copy">
         <div className="editorial-meta">
@@ -928,10 +926,10 @@ function Timeline() {
   );
 }
 
-function HomePage({ theme }: { theme: Theme }) {
+function HomePage() {
   return (
     <>
-      <Hero theme={theme} />
+      <Hero />
       <SignalBoard />
       <CapabilityMatrix />
       <Timeline />
@@ -967,9 +965,8 @@ function ProjectCard({
           src={project.cover.src}
           alt={project.cover.alt}
           loading="lazy"
-          style={{ objectPosition: projectCoverPosition(project) }}
+          style={projectCoverStyle(project, "index")}
         />
-        <figcaption>{projectCoverLabel(project)}</figcaption>
       </figure>
       <div className="project-card-copy">
         <div className="project-card-top">
@@ -1015,12 +1012,12 @@ function ProjectsPage({
 
   return (
     <>
-      <section className="page-intro">
+      <section className="page-intro projects-intro">
         <p className="eyebrow">Projects</p>
         <h1>문제, 고객 맥락, 기술 실행을 함께 보여주는 프로젝트</h1>
         <p>카드는 빠르게 스캔하고, 상세 페이지에서는 문제 정의와 근거 상태를 확인할 수 있습니다.</p>
       </section>
-      <section className="section section-tight">
+      <section className="section section-tight projects-index-section">
         <div className="filter-bar" role="toolbar" aria-label="프로젝트 필터">
           {data.filters.map((filter) => (
             <button
@@ -1527,7 +1524,7 @@ function ProjectDetailPage({ slug }: { slug: string }) {
         </div>
       </header>
       <figure className="detail-cover">
-        <img src={project.cover.src} alt={project.cover.alt} style={{ objectPosition: projectCoverPosition(project) }} />
+        <img src={project.cover.src} alt={project.cover.alt} style={projectCoverStyle(project, "detail")} />
         <figcaption>
           <span>{project.subtitle}</span>
           <strong>{projectCoverLabel(project)}</strong>
@@ -1653,16 +1650,14 @@ function NotFoundPage() {
 
 function Page({
   route,
-  theme,
   selectedFilter,
   setSelectedFilter,
 }: {
   route: string;
-  theme: Theme;
   selectedFilter: string;
   setSelectedFilter: (filter: string) => void;
 }) {
-  if (route === "/" || route === "") return <HomePage theme={theme} />;
+  if (route === "/" || route === "") return <HomePage />;
   if (route === "/projects") {
     return <ProjectsPage selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />;
   }
@@ -1708,7 +1703,7 @@ export default function App() {
     <>
       <Header route={route} theme={theme} onToggleTheme={toggleTheme} />
       <main id="main">
-        <Page route={route} theme={theme} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
+        <Page route={route} selectedFilter={selectedFilter} setSelectedFilter={setSelectedFilter} />
       </main>
       <Footer />
     </>

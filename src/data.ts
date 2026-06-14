@@ -39,6 +39,12 @@ export type ProjectCover = {
   alt: string;
   focalPoint?: string;
   kind: "concept" | "documentary" | "product" | "reconstruction" | "evidence";
+  placements?: Partial<Record<"selectedWork" | "index" | "detail", {
+    fit?: "cover" | "contain";
+    position?: string;
+    mobileFit?: "cover" | "contain";
+    mobilePosition?: string;
+  }>>;
 };
 
 export type ProjectMetric = {
@@ -95,6 +101,11 @@ export type Profile = {
   name: string;
   englishName: string;
   email: string;
+  heroImage: {
+    src: string;
+    alt: string;
+    caption: string;
+  };
   headline: string;
   shortPitch: string;
   location: string;
@@ -131,6 +142,11 @@ export const portfolioData = {
     name: "송채우",
     englishName: "Song Chaewoo",
     email: "songchaewoo0@gmail.com",
+    heroImage: {
+      src: "/assets/portfolio-identity.webp",
+      alt: "송채우가 Oishifood 팀원들과 함께 제품 경험을 만들며 협업하는 장면",
+      caption: "팀과 함께 문제를 정의하고, 직접 작동하는 제품 경험까지 만듭니다."
+    },
     headline: "고객 문제를 제품 실험으로 연결하는 PM/Product Builder",
     shortPitch: "현장 인터뷰와 수요 신호로 문제를 정의하고, 웹·API·AI 자동화로 검증 가능한 제품 실험까지 만듭니다.",
     location: "Seoul, Korea",
@@ -290,7 +306,12 @@ export const portfolioData = {
       cover: {
         src: "/assets/projects/covers/gcs-daily-snippet.webp",
         alt: "일기 기록이 API와 품질 검토 장치를 순환하며 개선되는 자동화 루프",
-        kind: "concept"
+        kind: "concept",
+        placements: {
+          selectedWork: { fit: "contain" },
+          index: { fit: "contain" },
+          detail: { fit: "contain" }
+        }
       },
       headlineImpact: "회고 업로드와 AI 피드백 개선을 매일 반복 가능한 자동화 루프로 전환",
       cardProblem: "회고 작성, 업로드, 피드백 반영이 매일 수동 반복됨",
@@ -394,7 +415,12 @@ export const portfolioData = {
       cover: {
         src: "/assets/projects/covers/gcs-hutzpa-creator-popups.webp",
         alt: "창작자의 작은 굿즈가 여러 오프라인 공간의 진열대로 연결되는 프리토타입 생태계",
-        kind: "concept"
+        kind: "concept",
+        placements: {
+          selectedWork: { fit: "contain" },
+          index: { fit: "contain" },
+          detail: { fit: "contain" }
+        }
       },
       headlineImpact: "100명 DM과 현장 방문으로 1인 창작자의 오프라인 진입 문제 신호를 확인",
       cardProblem: "1인 창작자는 팔로워 밖 신규 고객을 만날 낮은 비용의 접점이 부족함",
@@ -587,7 +613,12 @@ export const portfolioData = {
       cover: {
         src: "/assets/projects/covers/gcs-hutzpa-construction-billing.webp",
         alt: "건설 현장의 흩어진 사진·도면·수량 자료가 하나의 라임색 흐름으로 연결되는 장면",
-        kind: "concept"
+        kind: "concept",
+        placements: {
+          selectedWork: { fit: "contain" },
+          index: { fit: "contain" },
+          detail: { fit: "contain" }
+        }
       },
       headlineImpact: "9시간 현장 인터뷰로 기성청구 병목을 찾고 초기 수요 신호까지 확인",
       cardProblem: "데스크 리서치만으로는 기성청구의 진짜 병목과 타깃이 보이지 않음",
@@ -695,7 +726,11 @@ export const portfolioData = {
       cover: {
         src: "/assets/projects/covers/gcs-isolated-sea.webp",
         alt: "잘못된 해운업 가설을 걷어내고 인터뷰 근거를 다음 검증 기준으로 통과시키는 장면",
-        kind: "concept"
+        kind: "concept",
+        placements: {
+          index: { fit: "contain" },
+          detail: { fit: "contain" }
+        }
       },
       headlineImpact: "실패한 선원 문제 가설을 리서치 게이트와 Kill Rule이라는 다음 실행 기준으로 전환",
       cardProblem: "초기 선원/해운업 가설이 러프했고 질문 설계가 검증에 충분하지 않음",
@@ -884,7 +919,11 @@ export const portfolioData = {
       cover: {
         src: "/assets/projects/covers/oishifood-landing.webp",
         alt: "팀원별 미식 이야기가 하나의 스크롤 리본을 따라 뉴스레터 참여로 이어지는 장면",
-        kind: "concept"
+        kind: "concept",
+        placements: {
+          index: { fit: "contain" },
+          detail: { fit: "contain" }
+        }
       },
       headlineImpact: "팀 정체성과 참여 행동을 스크롤 인터랙션, 멤버 모달, 뉴스레터 흐름으로 연결",
       cardProblem: "팀 소개가 나열식이면 방문자가 정체성과 다음 행동을 기억하기 어려움",

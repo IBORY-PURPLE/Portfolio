@@ -6,6 +6,8 @@
 
 | Version | Commit | Use when | Safe rollback |
 | --- | --- | --- | --- |
+| 0.8.2 | `pending` | Identity-oriented hero, full-visibility project covers, faster project scan | Keep local diff or commit, then replace `pending` with the commit SHA |
+| 0.8.1 | `pending` | Clean project covers without image-overlay cover-type marks | Keep local diff or commit, then replace `pending` with the commit SHA |
 | 0.8.0 | `pending` | Footstep verified contribution, safer evidence-backed covers, mobile detail readability | Keep local diff or commit, then replace `pending` with the commit SHA |
 | 0.7.2 | `bcf9748d5989bbc651f13694939e8340ca5b88ea` | Vercel Git integration auto deployment with GitHub Actions validation | Disconnect the Vercel Git repository and restore the token-based workflow only if custom CI deployment is required |
 | 0.7.1 | `pending` | WindMill actual product-interface cover | Keep local diff or commit, then replace `pending` with the commit SHA |
@@ -17,6 +19,113 @@
 | 0.2.0 | `7dd3b42` 이후 자료 확장 기준 | Drive 자료 기반 프로젝트 확장과 초기 포트폴리오 구조 확인용 | 이후 커밋을 선택적으로 `git revert` |
 
 > 특정 시점의 파일 상태를 보기만 하려면 `git switch --detach <commit>`을 사용할 수 있습니다. 작업을 되돌릴 때는 기존 기록을 보존하는 `git revert <commit>`을 우선 사용하세요.
+
+## [0.8.2] - 2026-06-14
+
+Git commit: `pending`
+
+### Summary
+
+- 홈 히어로를 공사 기성청구 콘셉트 UI에서 송채우가 팀과 함께 제품 경험을 만드는 Oishifood 협업 이미지로 교체했습니다.
+- 텍스트와 인물이 포함된 가로형 커버를 화면마다 강제 확대하지 않고, 필요한 프로젝트만 축소해 전체 구도가 보이도록 변경했습니다.
+- 프로젝트 소개 영역과 첫 섹션 간격을 압축해 대표 사례가 첫 스크롤 안에 보이도록 채용 스캔 속도를 개선했습니다.
+
+### Agent Feedback Incorporated
+
+- Toss recruiter reviewer:
+  - P0: 기성청구 콘셉트 UI가 실제 완성 제품처럼 보일 수 있습니다. Acceptance: 히어로에서 제거하고, 검증된 기성청구 사례는 Selected Work 1순위와 `Team Result` 표현으로 유지했습니다.
+  - P1: 프로젝트명·인물·핵심 오브젝트가 강제 크롭되고 첫 사례 접근이 늦습니다. Acceptance: 텍스트/인물 커버는 `contain`, 프로젝트 인덱스는 `16:9`, 첫 이미지와 제목은 데스크톱·모바일 첫 스크롤 안에 배치했습니다.
+- UI/UX lead reviewer:
+  - P1: 홈·Selected Work·인덱스·상세가 하나의 중앙 `cover` 규칙을 공유해 화면별 가시성이 불안정합니다. Acceptance: 프로젝트별 `selectedWork / index / detail / mobile` fit·position 설정을 지원하고 첨부 화면의 핵심 콘텐츠를 전체 노출했습니다.
+  - P1: 모바일 4:3 강제 크롭과 큰 커버 높이가 탐색 밀도를 낮춥니다. Acceptance: 프로젝트 인덱스와 상세 커버를 모바일 포함 `16:9`로 통일했습니다.
+- Post-check:
+  - 이미지 가시성, 과장 위험, 역할/팀 결과 구분, 다크/라이트 모드, 주요 이미지 성능은 통과했습니다.
+  - 프로젝트 접근 속도 P1은 소개 영역 압축 후 첫 스크롤 기준을 충족하도록 보완했습니다.
+  - 1440×900 CTA 경계값 P1은 짧은 데스크톱 압축 범위를 확장해 해결했으며, Toss recruiter와 UI/UX lead 최종 재검토에서 남은 actionable P0/P1이 없습니다.
+
+### Added
+
+- `Profile.heroImage` 데이터와 72,738 byte WebP 히어로 자산 `public/assets/portfolio-identity.webp`를 추가했습니다.
+- `ProjectCover.placements`에 화면별 `fit`, `position`, 모바일 override 설정을 추가했습니다.
+
+### Changed
+
+- 홈 히어로 이미지는 프로젝트 링크가 아닌 본인의 협업 방식을 설명하는 이미지와 짧은 캡션으로 변경했습니다.
+- 기성청구, 1인 창작자, Daily Snippet, 고립된 바다, Oishifood 커버를 관련 화면에서 `contain`으로 표시합니다.
+- 프로젝트 인덱스와 모바일 상세 이미지 프레임을 `16:9`로 변경했습니다.
+- 높이 920px 이하의 데스크톱에서는 히어로 여백과 제목 크기를 압축해 CTA가 첫 화면에 남도록 했습니다.
+- 프로젝트 페이지 소개와 첫 섹션 상단 간격을 줄여 첫 사례 접근 시간을 단축했습니다.
+- 다섯 커버 WebP를 구도 변경 없이 재압축해 각각 약 49~113KB로 줄였습니다.
+
+### Verification
+
+- `npm run check`: passed (`tsc --noEmit`).
+- `npm run lint`: passed (`eslint .`).
+- `npm run build`: passed. Output: `dist/index.html` 1.60 kB (gzip 0.86 kB), CSS 71.12 kB (gzip 12.59 kB), JS 747.56 kB (gzip 137.32 kB).
+- `git diff --check`: passed with CRLF conversion warnings only.
+- Referenced home hero + Selected Work image total: 296,162 bytes (289.2KB).
+- Image QA: optimized hero and five referenced covers visually inspected; project text and people remained readable.
+- Browser QA:
+  - 1280×720 home: identity hero uses `contain`, CTA bottom 692px, hero height 658px, no horizontal overflow.
+  - 1440×900 home: CTA bottom 872px, no horizontal overflow.
+  - 375×812 home: identity hero uses `contain`, CTA bottom 664px, no horizontal overflow.
+  - Projects at 375, 768, 1280, and 1440px: designated covers use `contain`, project frames use `16:9`, no horizontal overflow.
+  - Project detail at 375×812: designated cover uses `contain` in a 332×187 frame, no horizontal overflow.
+  - Projects scan speed after compression: first image/title top 1061/1112px at 1280×720 and 881/1133px at 375×812, within the first scroll.
+  - Dark mode: designated detail cover remained `contain`; theme toggle and no-overflow state preserved.
+
+### Residual Risks
+
+- 히어로의 팀 이미지는 본인의 협업 방식을 보여주지만, 처음 보는 채용 담당자가 사진 속 송채우를 즉시 식별하기는 어려울 수 있습니다.
+- `contain` 커버는 핵심 콘텐츠를 보존하는 대신 원본 비율과 프레임 비율 차이에 따라 얇은 여백이 보일 수 있습니다.
+- Oishifood 협업 이미지는 기존 공개 커버를 기반으로 사용했으며, 향후 실제 고객 인터뷰·발표 장면이 확보되면 더 직접적인 개인 서사 이미지로 교체하는 편이 좋습니다.
+- 초기 JS 번들 747.56 kB와 이번 범위 밖의 일부 상세 이미지 용량은 추후 코드 분할·추가 WebP 최적화 대상입니다.
+
+## [0.8.1] - 2026-06-13
+
+Git commit: `pending`
+
+### Summary
+
+- 홈 히어로, Selected Works, 프로젝트 목록의 커버 이미지 위에 표시되던 `Concept visual · AI-generated` 등 커버 유형 마크를 제거했습니다.
+- 커버 유형 데이터와 상세 페이지 이미지 아래 출처 설명은 유지해 생성형 콘셉트와 실제 제품·근거 이미지를 구분할 수 있게 했습니다.
+
+### Agent Feedback Incorporated
+
+- Toss recruiter reviewer:
+  - P1: 이미지 위 마크가 Role과 Result보다 먼저 눈에 들어오고, 제거 범위가 홈 히어로·Selected Works·프로젝트 목록 중 일부만 누락될 수 있습니다. Acceptance: 세 표면의 모든 커버 유형 오버레이를 제거하고 검증 상태, 프로젝트 순서, Role, Result는 유지했습니다.
+  - Post-check: 남은 P0/P1 없음. 상세 페이지 커버 유형 설명과 Actual Evidence CTA가 유지되어 과장·오인 방지 장치가 보존됐습니다.
+- UI/UX lead reviewer:
+  - P1: 작은 대문자 오버레이가 이미지 초점을 가리고 모바일에서 읽기 어렵습니다. Acceptance: 오버레이 요소와 전용 스타일을 제거하고 카드 링크, CTA, 호버, 상세 캡션은 유지했습니다.
+  - Post-check: 남은 P0/P1 없음. 모바일에서도 잔여 스타일이나 빈 여백이 없습니다.
+
+### Added
+
+- 새 UI 요소나 자산은 추가하지 않았습니다.
+
+### Changed
+
+- 홈 히어로의 `Featured case · ... · cover type` 하단 오버레이를 제거했습니다.
+- Selected Works와 프로젝트 목록의 이미지 우측 하단 커버 유형 `figcaption` 오버레이를 제거했습니다.
+- 제거된 오버레이 전용 CSS를 정리하고, 상세 페이지의 이미지 아래 커버 유형 캡션은 유지했습니다.
+
+### Verification
+
+- `npm run check`: passed (`tsc --noEmit`).
+- `npm run lint`: passed (`eslint .`).
+- `npm run build`: passed; generated `dist/index.html` 1.60 kB (gzip 0.86 kB), CSS 69.32 kB (gzip 12.28 kB), and JS 746.09 kB (gzip 137.04 kB).
+- `git diff --check`: passed with CRLF conversion warnings only.
+- Browser QA:
+  - Desktop 1280×720 home: hero cover overlay count `0`; no horizontal overflow.
+  - Desktop projects: 11 project covers, overlay count `0`, visible cover-type overlay text count `0`; no horizontal overflow.
+  - Mobile 375×812 home and projects: overlay count `0`; no horizontal overflow.
+  - Light and dark themes: cover overlay count `0`.
+  - Mobile project detail: image-overlay count `0`; image-below detail label `Concept visual · AI-generated` preserved; no horizontal overflow.
+- Toss recruiter and UI/UX lead final re-review: no remaining P0/P1.
+
+### Residual Risks
+
+- 히어로 이미지는 전체가 프로젝트 링크이지만, 마크 제거 후 클릭 가능성을 알리는 시각적 단서는 데스크톱 호버 확대와 링크 커서뿐입니다. 모바일에서는 발견성이 낮을 수 있어 추후 이미지 밖 프로젝트명 링크를 검토할 수 있습니다.
 
 ## [0.8.0] - 2026-06-12
 
